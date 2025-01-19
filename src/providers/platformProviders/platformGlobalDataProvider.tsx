@@ -22,7 +22,6 @@ export type PlatformGlobalDataProviderType = {
 
 const InititalState: PlatformGlobalDataProviderType = {
 
-    //this data fetched inititally at the time of  loading in src/components/templates/craftBuilder/index.tsx:16
     tenantDetails: null,
     setTenantDetails: () => { },
 

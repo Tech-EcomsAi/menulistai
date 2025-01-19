@@ -7,7 +7,7 @@ import { _debounce } from "@hook/useDebounce"
 import { firebaseAuth } from "@lib/firebase/firebaseClient"
 import { PlatformGlobalDataContext } from "@providers/platformProviders/platformGlobalDataProvider"
 import { showErrorToast, showSuccessToast, showWarningToast } from "@reduxSlices/toast"
-import { UserUploadedFileType } from "@template/craftBuilder/types"
+import { UserUploadedFileType } from '@type/common'
 import { UserDataType } from "@type/platform/user"
 import { getObjectDifferance } from "@util/deepMerge"
 import { extractUserDataFromFirebaseUser } from "@util/usersUtils"

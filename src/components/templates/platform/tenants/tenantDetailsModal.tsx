@@ -7,7 +7,7 @@ import { DB_COLLECTIONS } from '@constant/database';
 import { ECOMSAI_PLATFORM_TENANT_ID } from '@constant/user';
 import { getStoreById } from '@database/stores';
 import { addTenant, updateTenant } from '@database/tenants';
-import { UserUploadedFileType } from '@template/craftBuilder/types';
+import { UserUploadedFileType } from '@type/common';
 import { MinimalStoreDataType } from '@type/platform/store';
 import { TenantDataType } from '@type/platform/tenant';
 import { getFormatedDateAndTime } from '@util/dateTime';

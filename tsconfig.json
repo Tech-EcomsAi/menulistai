@@ -45,12 +45,7 @@
       "@providers/*": ["src/providers/*"],
       "@util/*": ["src/utils/*"],
       "@apiService/*": ["src/apiService/*"],
-      "@assets/*": ["public/assets/*"],
-      "@objectPropertiesEditor/*": [
-        "src/components/templates/craftBuilder/objectPropertiesEditor/*"
-      ],
-      "@craftBuilder/*": ["src/components/templates/craftBuilder/*"],
-      "@tabsComposer/*": ["src/components/templates/craftBuilder/tabsComposer*"]
+      "@assets/*": ["public/assets/*"]
     }
   },
   "include": [

@@ -1,5 +1,4 @@
 import FormElementWrapper from '@atoms/formElementWrapper';
-import ColorStyle from '@molecules/styleElement/color';
 import EditorWrapper from '@organisms/editor/editorWrapper';
 import { UserDataType } from '@type/platform/user';
 import { getUTCDate } from '@util/dateTime';
@@ -46,9 +45,6 @@ function AdditionalInfo({ userDetails, onChangeValue }: { userDetails: UserDataT
             </FormElementWrapper>
             <FormElementWrapper label="Birth Date">
                 <DatePicker defaultValue={userDetails?.birthday ? userDetails?.birthday : undefined} onChange={(date, dateString) => onChangeValue('birthday', getUTCDate(date["$d"]).dateString)} />
-            </FormElementWrapper>
-            <FormElementWrapper label='Color'>
-                <ColorStyle value={userDetails?.color || ""} onChange={(value) => onChangeValue(value)} />
             </FormElementWrapper>
             <FormElementWrapper label='Notes'>
                 <Input.TextArea placeholder="Additional Notes" value={userDetails?.notes || ""} onChange={(e) => onChangeValue('notes', e.target.value)} />

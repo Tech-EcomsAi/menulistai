@@ -28,6 +28,7 @@
     "fontfaceobserver": "^2.3.0",
     "framer-motion": "^10.16.4",
     "html-to-image": "^1.11.11",
+    "libphonenumber-js": "^1.11.18",
     "nanoid": "^5.0.9",
     "next": "^14.2.23",
     "next-auth": "^4.24.3",

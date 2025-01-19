@@ -1,5 +1,4 @@
 import { IMAGE_COMPRESSION_LIMIT } from "@constant/common";
-import ImageCropper from "@organisms/imageCropper";
 import { getBase64, getBase64Length, getCompressedImage } from "@util/utils";
 import { useState } from "react";
 
@@ -84,14 +83,14 @@ function ImageUploadInput({
                 ref={fileInputRef}
                 onChange={handleFileChange}
             />
-            {cropperConfiguarations.active && <ImageCropper
+            {/* {cropperConfiguarations.active && <ImageCropper
                 ratio={cropperConfiguarations.ratio}
                 cropBoxResizable={cropperConfiguarations.cropBoxResizable}
                 onReplaceImage={() => fileInputRef.current.click()}
                 onCancel={() => setShowCropperModal({ active: false, src: null, data: null })}
                 modalData={showCropperModal}
                 onSave={onCropImage}
-            />}
+            />} */}
 
         </>
     );
