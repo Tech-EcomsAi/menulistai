@@ -4,7 +4,6 @@ import EcomsIconLogo from '@atoms/ecomsLogo';
 import { APP_NAME } from '@constant/common';
 import { NAVIGARIONS_ROUTINGS } from '@constant/navigations';
 import { useAppSelector } from '@hook/useAppSelector';
-import MessagesModal from '@organisms/headerComponent/messagesModal';
 import NotificationsModal from '@organisms/headerComponent/notificationsModal';
 import { getHeaderBgBlurState, getHeaderPositionState, getShowDateInHeaderState, getShowUserDetailsInHeaderState, getSidebarLayoutState } from '@reduxSlices/clientThemeConfig';
 import { getFormatedDate, getFormatedTime, getUTCDate } from '@util/dateTime';
@@ -15,11 +14,8 @@ import { useFormatter } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { LuBell, LuLoader, LuMessageSquare, LuSearch, LuUser } from 'react-icons/lu';
-import { TbApps } from 'react-icons/tb';
-import AppActionsModal from './appActionsModal';
+import { LuBell, LuLoader, LuUser } from 'react-icons/lu';
 import AppBreadcrumb from './appBreadcrumb/appBreadcrumb';
-import AppSearchModal from './appSearchModal';
 import styles from './headerComponent.module.scss';
 import ProfileActionsModal from './profileActionsModal';
 
@@ -32,7 +28,6 @@ const HeaderComponent = () => {
     const { token } = theme.useToken();
     const { data: session } = useSession()
     const [userData, setUserData] = useState<any>(session?.user)
-    const [showSearchModal, setShowSearchModal] = useState(false)
     const fixedHeader = useAppSelector(getHeaderPositionState)
     const headerBgBlured = useAppSelector(getHeaderBgBlurState)
     const showDateInHeader = useAppSelector(getShowDateInHeaderState);
@@ -71,13 +66,6 @@ const HeaderComponent = () => {
 
             <div className={styles.rightActionsWrap}>
                 <div className={styles.actionsWrap}>
-                    <Button type="text" icon={<LuSearch />} onClick={() => setShowSearchModal(!showSearchModal)} />
-                    <AppSearchModal onClose={() => setShowSearchModal(!showSearchModal)} isModalOpen={showSearchModal} />
-
-                    {/* Quick app actions */}
-                    <AppActionsModal>
-                        <Button type="text" icon={<TbApps />} />
-                    </AppActionsModal>
 
                     {/* Notofications */}
                     <BadgeRenderer dotted={true} count={notifications.length} overflowCount={9} >
@@ -86,12 +74,6 @@ const HeaderComponent = () => {
                         </NotificationsModal>
                     </BadgeRenderer>
 
-                    {/* Messages */}
-                    <BadgeRenderer dotted={true} count={11} overflowCount={9} >
-                        <MessagesModal unreadMessages={unreadMessages}>
-                            <Button type="text" icon={<LuMessageSquare />} />
-                        </MessagesModal>
-                    </BadgeRenderer>
                 </div>
 
                 {showDateInHeader && <div className={`${styles.actionsWrap} ${styles.dateWrap}`}>

@@ -1,5 +1,4 @@
 
-import { CRAFT_BUILDER_NAVIGARIONS_ROUTINGS } from '@constant/navigations';
 import { addErrorLog } from '@database/loggers/errorLogger';
 import { match as matchLocale } from '@formatjs/intl-localematcher';
 import { APP_LOCALE_COOKIES_KEY, APP_TIMEZONE_COOKIES_KEY, AppSupportedLocales, defaultLocale, defaultTimezone, Locale } from '@lib/localization/config';
@@ -44,7 +43,7 @@ export default getRequestConfig(async () => {
 
         //4. get current calling route so that we can identify which apps locals needs to be imported
         const referer = headers().get('referer');
-        const currentLocalePath = referer?.includes(CRAFT_BUILDER_NAVIGARIONS_ROUTINGS.ROOT) ? "craftBuilder" : "ecoms.ai";
+        const currentLocalePath = "ecoms.ai";
         // console.log("4. referer", referer + "/" + locale)
 
         //5. redirect all en to en_us

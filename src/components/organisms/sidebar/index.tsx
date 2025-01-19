@@ -29,7 +29,7 @@ const SidebarComponent = () => {
     const ACTION_MENUS: NavItemType[] = [
         { label: 'App Appearance', route: 'dashboard-settings', icon: <MdOutlineSettingsSuggest /> },
         { label: 'Dark Mode', route: 'darkMode', icon: <MdDarkMode /> },
-        { label: 'Raise Support', route: 'dashboard-help', icon: <TbPhoneCalling /> },
+        { label: 'Support', route: 'dashboard-help', icon: <TbPhoneCalling /> },
     ]
 
     useEffect(() => {
@@ -133,7 +133,7 @@ const SidebarComponent = () => {
                             const isActive = nav.active;
                             const NAV_ICON = nav.icon;
                             return <Fragment key={navIndex}>
-                                <div className={`${styles.menuItemWrap} ${isActive ? styles.active : ""} ${styles[nav.route]}`}
+                                <div tabIndex={navIndex} className={`${styles.menuItemWrap} ${isActive ? styles.active : ""} ${styles[nav.route]}`}
                                     onMouseEnter={() => setHoverId(nav.route)}
                                     onMouseLeave={() => setHoverId('')}
                                     onClick={() => onClickNav(nav, 1, navIndex)}

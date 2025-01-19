@@ -1,9 +1,9 @@
 import Saperator from "@atoms/Saperator";
 import { useAppDispatch } from "@hook/useAppDispatch";
 import { useAppSelector } from "@hook/useAppSelector";
-import { getBreadcrumbLayoutState, getSidebarLayoutState, getSidebarState, toggleBreadcrumbLayout, toggleSidbar, toggleSidebarLayout } from "@reduxSlices/clientThemeConfig";
-import { Button, Flex, theme, Typography } from "antd";
-import { LuLayoutPanelLeft, LuLayoutPanelTop, LuMoreHorizontal, LuMoreVertical, LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
+import { getBreadcrumbLayoutState, getSidebarLayoutState, getSidebarState, toggleSidbar, toggleSidebarLayout } from "@reduxSlices/clientThemeConfig";
+import { Flex, Segmented, theme, Typography } from "antd";
+import { LuLayoutPanelLeft, LuLayoutPanelTop, LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
 
 const { Text } = Typography;
 
@@ -20,77 +20,36 @@ function AppLayoutSwitcher() {
         <>
             <Flex vertical gap={10}>
                 <Text strong>Dashboard Layout</Text>
-                <Flex gap={10}>
-                    <Button
-                        block
-                        onClick={() => dispatch(toggleSidebarLayout(true))}
-                        size="large"
-                        type={isVerticalSidebarLayout ? "primary" : "default"}
-                        ghost={isVerticalSidebarLayout}
-                        icon={<LuLayoutPanelLeft />}>
-                        Vertical
-                    </Button>
-                    <Button
-                        block
-                        onClick={() => dispatch(toggleSidebarLayout(false))}
-                        size="large"
-                        type={isVerticalSidebarLayout ? "default" : "primary"}
-                        ghost={!isVerticalSidebarLayout}
-                        icon={<LuLayoutPanelTop />}>
-                        Horizontal
-                    </Button>
-                </Flex>
+                <Segmented
+                    block
+                    size="large"
+                    value={isVerticalSidebarLayout ? "vertical" : "horizontal"}
+                    onChange={(value) => dispatch(toggleSidebarLayout(value === "vertical"))}
+                    options={[
+                        { label: "Vertical", icon: <LuLayoutPanelLeft />, value: "vertical" },
+                        { label: "Horizontal", icon: <LuLayoutPanelTop />, value: "horizontal" }
+                    ]}
+                    style={{ boxShadow: token.boxShadowTertiary }}
+                />
             </Flex>
             <Saperator />
             {isVerticalSidebarLayout && <>
                 <Flex vertical gap={10}>
                     <Text strong>Sidebar Layout</Text>
-                    <Flex gap={10}>
-                        <Button
-                            block
-                            onClick={() => dispatch(toggleSidbar(true))}
-                            size="large"
-                            type={isCollapsed ? "primary" : "default"}
-                            ghost={isCollapsed}
-                            icon={<LuPanelLeftClose />}>
-                            Collapased
-                        </Button>
-                        <Button
-                            block
-                            onClick={() => dispatch(toggleSidbar(false))}
-                            size="large"
-                            type={isCollapsed ? "default" : "primary"}
-                            ghost={!isCollapsed}
-                            icon={<LuPanelLeftOpen />}>
-                            Expanded
-                        </Button>
-                    </Flex>
+                    <Segmented
+                        block
+                        size="large"
+                        value={isCollapsed ? "collapsed" : "expanded"}
+                        onChange={(value) => dispatch(toggleSidbar(value === "collapsed"))}
+                        options={[
+                            { label: "Collapased", icon: <LuPanelLeftClose />, value: "collapsed" },
+                            { label: "Expanded", icon: <LuPanelLeftOpen />, value: "expanded" }
+                        ]}
+                        style={{ boxShadow: token.boxShadowTertiary }}
+                    />
                 </Flex>
                 <Saperator />
             </>}
-            <Flex vertical gap={10}>
-                <Text strong>Breadcrumb Layout</Text>
-                <Flex gap={10}>
-                    <Button
-                        block
-                        onClick={() => dispatch(toggleBreadcrumbLayout(true))}
-                        size="large"
-                        type={isVerticalBreadcrumbLayout ? "primary" : "default"}
-                        ghost={isVerticalBreadcrumbLayout}
-                        icon={<LuMoreVertical />}>
-                        Dropdown List
-                    </Button>
-                    <Button
-                        block
-                        onClick={() => dispatch(toggleBreadcrumbLayout(false))}
-                        size="large"
-                        type={isVerticalBreadcrumbLayout ? "default" : "primary"}
-                        ghost={!isVerticalBreadcrumbLayout}
-                        icon={<LuMoreHorizontal />}>
-                        Spread List
-                    </Button>
-                </Flex>
-            </Flex>
         </>
     )
 }
