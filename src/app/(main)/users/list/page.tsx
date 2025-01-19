@@ -1,4 +1,4 @@
-import UsersListPage from "@template/client-dashboard-app/users/usersList"
+import UsersListPage from "@template/main-app/users/usersList"
 
 function page() {
     return (

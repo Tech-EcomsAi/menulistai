@@ -1,7 +1,8 @@
+import Website from "@template/website"
 
 function page() {
     return (
-        <div>All Clients Website entry point</div>
+        <Website />
     )
 }
 
