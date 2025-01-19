@@ -36,18 +36,6 @@ import next from "./next.svg";
 import share from "./share.svg";
 import star2 from "./star2.svg";
 import timer from "./timer.svg";
-//craft builder icons
-import background from "@assets/Icons/craftBuilder/background";
-import brandKit from "@assets/Icons/craftBuilder/brandKit";
-import character from "@assets/Icons/craftBuilder/character";
-import documents from "@assets/Icons/craftBuilder/documents";
-import graphics from "@assets/Icons/craftBuilder/graphics";
-import images from "@assets/Icons/craftBuilder/images";
-import myStuff from "@assets/Icons/craftBuilder/myStuff";
-import qrcode from "@assets/Icons/craftBuilder/qrcode";
-import shapes from "@assets/Icons/craftBuilder/shapes";
-import template from "@assets/Icons/craftBuilder/template";
-import text from "@assets/Icons/craftBuilder/text";
 
 const icons: any = {
     cart: cart,
@@ -85,18 +73,6 @@ const icons: any = {
     query: query,
     expandedMenu: expandedMenu,
     help: help,
-    //craft builder icons
-    background: background,
-    images: images,
-    shapes: shapes,
-    character: character,
-    qrcode: qrcode,
-    graphics: graphics,
-    brandKit: brandKit,
-    documents: documents,
-    myStuff: myStuff,
-    text: text,
-    template: template,
 };
 
 type Props = {

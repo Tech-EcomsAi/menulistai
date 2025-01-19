@@ -9,9 +9,6 @@ import LanguageSwitcher from '@organisms/languageSwitcher';
 import ThemeModeSwitcher from '@organisms/themeModeSwitcher';
 import TimezoneSwitcher from '@organisms/timezoneSwitcher';
 import { getDarkColorState, getDarkModeState, getLightColorState, updateDarkThemeColor, updateLightThemeColor } from '@reduxSlices/clientThemeConfig';
-import AssetsUploader from '@template/platform/assets';
-import FontPresets from '@template/platform/fontPresets';
-import Logger from '@template/platform/logger';
 import PlatformUsers from '@template/platform/users';
 import { convertRGBtoOBJ, hexToRgbA } from '@util/utils';
 import { Button, Flex, theme, Typography } from 'antd';
@@ -61,12 +58,6 @@ function PlatformSettings() {
         switch (activetab) {
             case "users":
                 return <PlatformUsers />
-            case "fonts":
-                return <FontPresets />
-            case "logs":
-                return <Logger />
-            case "assets":
-                return <AssetsUploader />
             case "tenants":
                 return <TenantsDashboard />
             case "stores":

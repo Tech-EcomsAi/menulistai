@@ -8,3 +8,11 @@ export interface GlobalAddressType {
     country: string;
     postalCode: string;
 }
+
+export type UserUploadedFileType = {
+    src?: string;
+    name?: string;
+    size?: number;
+    type?: string;
+    url?: string;
+}

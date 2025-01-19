@@ -1,5 +1,4 @@
 // This file will export the basic utitlity function to use globally.
-import { FontPresetsType } from '@template/craftBuilder/types';
 import Compressor from 'compressorjs';
 import { v4 as uuid } from 'uuid';
 import { windowRef } from './window';
@@ -747,7 +746,7 @@ export const getBase64Length = (base64Url) => {
   return sizeInBytes;
 }
 
-export const addFontFaceStyle = (presetsList: FontPresetsType[]) => {
+export const addFontFaceStyle = (presetsList: any[]) => {
   let styleTag = document.getElementById("ecoms.ai-font-face");
   if (!styleTag) {
     styleTag = document.createElement('style');

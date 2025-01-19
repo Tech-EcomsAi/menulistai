@@ -1,7 +1,7 @@
 import ImageUploadInput from '@atoms/imageUploadInput';
 import Saperator from '@atoms/Saperator';
 import EditorWrapper from '@organisms/editor/editorWrapper';
-import { UserUploadedFileType } from '@template/craftBuilder/types';
+import { UserUploadedFileType } from '@type/common';
 import { UserDataType } from '@type/platform/user';
 import { removeObjRef, updateDeepPathValue } from '@util/utils';
 import { Button, Card, Empty, Flex, Input, Typography } from 'antd';
