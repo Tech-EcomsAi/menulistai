@@ -60,22 +60,9 @@ const SidebarComponent = () => {
             }
         })
 
-        // if (!currentNav) {
-        //     if (`/${NAVIGARIONS_ROUTINGS.WEBSITE_BUILDER_DASHBOARD}` == pathname || `/${NAVIGARIONS_ROUTINGS.WEBSITE_BUILDER_EDITOR}` == pathname) {
-        //         currentNav = { route: NAVIGARIONS_ROUTINGS.WEBSITE_BUILDER_DASHBOARD, label: 'Websites' };
-        //         let websiteNavIndex = menuCopy.findIndex((nav) => nav.route == NAVIGARIONS_ROUTINGS.WEBSITE_BUILDER_DASHBOARD);
-        //         menuCopy[websiteNavIndex].active = true;
-        //     }
-        // }
-
         currentNav && setActiveNav(currentNav);
         setSidebarMenusList(menuCopy)
     }, [pathname])
-
-    // useEffect(() => {
-    //     console.log("ishover", isHover)
-    //     console.log("isCollapsed", isCollapsed)
-    // }, [isCollapsed, isHover])
 
     const showExpandedSidebar = useMemo(() => Boolean(!isCollapsed || isHover), [isCollapsed, isHover])
 
