@@ -1,7 +1,7 @@
 'use client'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { EMPTY_ERROR, LOGO_SMALL } from "@constant/common";
-import { CLIENT_DASHBOARD_HOME_ROUTING, HOME_ROUTING, NAVIGARIONS_ROUTINGS } from "@constant/navigations";
+import { CLIENT_DASHBOARD_ROUTING, HOME_ROUTING, NAVIGARIONS_ROUTINGS } from "@constant/navigations";
 import { useAppSelector } from "@hook/useAppSelector";
 import { getDarkModeState, toggleDarkMode } from "@reduxSlices/clientThemeConfig";
 import { toggleLoader } from "@reduxSlices/loader";
@@ -27,12 +27,11 @@ function LoginPage() {
   const [error, setError] = useState({ id: '', message: '' });
   const { token } = theme.useToken();
   const isDarkMode = useAppSelector(getDarkModeState)
-  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (Boolean(session?.data?.user)) {
       console.log("user found")
-      router.push(HOME_ROUTING)
+      router.push(`/${CLIENT_DASHBOARD_ROUTING}`)
     }
   }, [])
 
@@ -121,10 +120,6 @@ function LoginPage() {
     }}>
       <div className={styles.bgWrap}></div>
       <div className={styles.bodyContent}>
-        <div className={styles.leftContent}>
-          {/* <ImageRenderer src="https://firebasestorage.googleapis.com/v0/b/ecomsai.appspot.com/o/ecomsAi%2Fplatform%20assets%2FLeft%20Tilt.png?alt=media&token=dd518a72-4d0f-4c6c-8f66-c3694e64b866" /> */}
-          {/* <img src="https://firebasestorage.googleapis.com/v0/b/ecomsai.appspot.com/o/ecomsAi%2Fplatform%20assets%2FTransparent%20Angle%2001.png?alt=media&token=31a6d8bd-e428-4a8b-b056-171fffd9a802" /> */}
-        </div>
         <div className={styles.rightContent}>
           <div className={styles.formWrap}
             style={{
@@ -135,13 +130,13 @@ function LoginPage() {
               boxShadow: `inset 0 1px 1px 0 rgba(216,236,248,.2), inset 0 24px 48px 0 rgba(168,216,245,.06), 0 16px 32px rgba(0,0,0,.3)`,
             }}>
             <h3 className={`${styles.heading}`} style={{ color: token.colorTextLabel }}>Welcome to</h3>
-            <h1 className={`heading ${styles.heading} ${styles.title}`}>ecoms.ai</h1>
+            <h1 onClick={() => router.push(HOME_ROUTING)} className={`heading ${styles.heading} ${styles.title}`}>Menulist Ai</h1>
             <div className={styles.subHeading} style={{ color: token.colorTextHeading }}>Take your business beyond the four walls</div>
             <div className={styles.googleLoginWrap}>
               <Button type="default"
                 size="large"
                 icon={<FcGoogle />}
-                onClick={() => signIn('google', { callbackUrl: `${location.origin}${CLIENT_DASHBOARD_HOME_ROUTING}` })}
+                onClick={() => signIn('google', { callbackUrl: `${location.origin}${CLIENT_DASHBOARD_ROUTING}` })}
               // onClick={signInWithGoogle} 
               >
                 Sing in with Google</Button>
@@ -175,7 +170,7 @@ function LoginPage() {
               </div>}
               <Space direction="vertical" align="center" style={{ width: "100%" }} >
                 <Button type="link" className="login-form-button" onClick={() => router.push(`/${NAVIGARIONS_ROUTINGS.FORGOT_PASSWORD}`)}>Forgot password</Button>
-                <Button loading={isLoading} type="primary" size="large" htmlType="submit" style={{ width: 200 }} className="login-form-button">Log in</Button>
+                <Button type="primary" size="large" htmlType="submit" style={{ width: 200 }} className="login-form-button">Log in</Button>
               </Space>
               <Space direction="vertical" align="center" style={{ width: "100%", marginTop: 20 }} >
                 <Button type="text" className="login-form-button" style={{ color: token.colorTextLabel }}>Not able to login please contact owner</Button>

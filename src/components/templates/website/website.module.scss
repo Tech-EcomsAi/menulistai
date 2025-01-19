@@ -1,0 +1,286 @@
+.websiteContainer {
+  width: 100%;
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  overflow-x: hidden;
+
+  .hero {
+    padding: 120px 24px;
+    text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(0,84,208,0.15) 0%, rgba(0,0,0,0) 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 72px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      z-index: 1;
+    }
+
+    p {
+      font-size: 24px;
+      line-height: 1.5;
+      color: #a8a8a8;
+      max-width: 800px;
+      margin: 0 auto 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    button {
+      position: relative;
+      z-index: 1;
+      font-size: 18px;
+      height: 48px;
+      padding: 0 32px;
+      background: linear-gradient(90deg, #0054D0 0%, #0088FF 100%);
+      border: none;
+      border-radius: 24px;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,84,208,0.3);
+      }
+    }
+  }
+
+  .features {
+    padding: 80px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .featureGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+    }
+
+    .featureCard {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      }
+
+      &:hover {
+        transform: translateY(-8px);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      h3 {
+        font-size: 24px;
+        margin-bottom: 16px;
+        background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-fill-color: transparent;
+      }
+
+      p {
+        color: #a8a8a8;
+        line-height: 1.6;
+      }
+
+      .icon {
+        font-size: 40px;
+        margin-bottom: 24px;
+        color: #0054D0;
+      }
+    }
+  }
+
+  .demoSection {
+    padding: 80px 24px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,84,208,0.1) 100%);
+    position: relative;
+
+    h2 {
+      font-size: 48px;
+      margin-bottom: 48px;
+      background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .demoVideo {
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+  }
+
+  .capabilities {
+    padding: 100px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h2 {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 60px;
+      background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .capabilityItem {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 80px;
+      
+      &:nth-child(even) {
+        flex-direction: row-reverse;
+      }
+
+      .content {
+        flex: 1;
+
+        h3 {
+          font-size: 32px;
+          margin-bottom: 24px;
+          background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-fill-color: transparent;
+        }
+
+        p {
+          color: #a8a8a8;
+          font-size: 18px;
+          line-height: 1.6;
+        }
+      }
+
+      .image {
+        flex: 1;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      }
+    }
+  }
+
+  .cta {
+    padding: 100px 24px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,84,208,0.15) 100%);
+
+    h2 {
+      font-size: 48px;
+      margin-bottom: 24px;
+      background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: 20px;
+      color: #a8a8a8;
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 80px 20px;
+      
+      h1 {
+        font-size: 48px;
+      }
+
+      p {
+        font-size: 20px;
+      }
+    }
+
+    .features {
+      padding: 60px 20px;
+    }
+
+    .demoSection {
+      padding: 60px 20px;
+
+      h2 {
+        font-size: 36px;
+      }
+    }
+
+    .capabilities {
+      padding: 60px 20px;
+
+      h2 {
+        font-size: 36px;
+      }
+
+      .capabilityItem {
+        flex-direction: column !important;
+        gap: 24px;
+        margin-bottom: 60px;
+
+        .content {
+          text-align: center;
+
+          h3 {
+            font-size: 28px;
+            background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-fill-color: transparent;
+          }
+        }
+      }
+    }
+
+    .cta {
+      padding: 60px 20px;
+
+      h2 {
+        font-size: 36px;
+      }
+    }
+  }
+}

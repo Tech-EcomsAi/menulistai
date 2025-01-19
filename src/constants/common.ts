@@ -1,6 +1,6 @@
 import HorizontalLogo from "@assets/logo/horizontal.svg";
 
-export const APP_NAME = 'ecoms.ai'
+export const APP_NAME = 'MenulistAi'
 export const APP_TAGLINE = 'Your Second Brain'
 export const APP_THEME_COLOR = "#0054D0";
 export const TOGGLE_DARK_MODE = 'TOGGLE_DARK_MODE';
@@ -24,7 +24,7 @@ export const BGRCreditValueInTokens = 500;//1 credit = 500 token (ex. 1mb image 
 // export const LOGO = IconLogo;
 export const HORIZONTAL_LOGO = HorizontalLogo;
 export const LOGO = 'https://firebasestorage.googleapis.com/v0/b/ecomsai.appspot.com/o/ecomsAi%2Flogo%2Flogo.png?alt=media&token=af824138-7ebb-4a72-b873-57298fd0a430'
-export const LOGO_TEXT = 'EcomsAI'
+export const LOGO_TEXT = 'MenulistAi'
 export const LOGO_LARGE = 'https://firebasestorage.googleapis.com/v0/b/ecomsai.appspot.com/o/ecomsAi%2Flogo%2Fhorizontal.svg?alt=media&token=aee07ecb-c9ce-4a65-b3e1-1bea2a3f12ef';
 export const LOGO_SMALL = 'https://firebasestorage.googleapis.com/v0/b/ecomsai.appspot.com/o/ecomsAi%2Flogo%2Fsquare_transperant.png?alt=media&token=8389d9c9-7b79-4c49-aa33-c2c24e15acd5';
 export const LOGO_ANIMATED = 'https://firebasestorage.googleapis.com/v0/b/ecomsai.appspot.com/o/ecomsAi%2Flogo%2FecomsAi.gif?alt=media&token=6ce6e52d-7ac5-4e46-b68f-fdd1e11cba07';

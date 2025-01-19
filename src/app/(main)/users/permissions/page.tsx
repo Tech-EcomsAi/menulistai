@@ -1,4 +1,4 @@
-import UserPermissionsPage from "@template/client-dashboard-app/users/permissions"
+import UserPermissionsPage from "@template/main-app/users/permissions"
 
 function page() {
     return (

@@ -25,11 +25,10 @@ export default function AntdLayoutWrapper(props: any) {
     const { token } = theme.useToken();
     const pathname = usePathname();
     const isVerticalSidebar = useAppSelector(getSidebarLayoutState)
-    const isCraftBuilderPage = pathname.includes(`/craft-builder`);
 
     const renderContent = () => {
 
-        if (isCraftBuilderPage || SKIP_CLIENT_APP_LAYOUT_ROUTINGS.includes(pathname)) {
+        if (SKIP_CLIENT_APP_LAYOUT_ROUTINGS.includes(pathname)) {
             return <>{props.children}</>
         } else {
             return <Layout className={`${styles.layoutWrapper}`} dir={isRTLDirection ? "rtl" : "ltr"} >

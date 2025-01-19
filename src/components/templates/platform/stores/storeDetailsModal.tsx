@@ -7,7 +7,7 @@ import { DB_COLLECTIONS } from '@constant/database';
 import { ECOMSAI_PLATFORM_STORE_ID } from '@constant/user';
 import { addStore, updateStore } from '@database/stores';
 import { updateTenantsStoreslist } from '@database/tenants';
-import RoleDetailsModal from '@template/client-dashboard-app/users/permissions/roleDetailsModal';
+import RoleDetailsModal from '@template/main-app/users/permissions/roleDetailsModal';
 import { UserUploadedFileType } from '@type/common';
 import { StoreDataType } from '@type/platform/store';
 import { getFormatedDateAndTime } from '@util/dateTime';

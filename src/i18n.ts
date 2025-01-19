@@ -43,7 +43,7 @@ export default getRequestConfig(async () => {
 
         //4. get current calling route so that we can identify which apps locals needs to be imported
         const referer = headers().get('referer');
-        const currentLocalePath = "ecoms.ai";
+        const currentLocalePath = "menulist.ai";
         // console.log("4. referer", referer + "/" + locale)
 
         //5. redirect all en to en_us

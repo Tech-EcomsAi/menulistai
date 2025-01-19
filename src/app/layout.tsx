@@ -14,7 +14,7 @@ import { interFont } from 'src/fonts/inter'
 import ServerSidePageLoader from './loading'
 
 export const metadata: Metadata = {
-  title: 'Ecoms Ai',
+  title: 'Menulist Ai',
   description: 'The everything app',
   generator: `
   
