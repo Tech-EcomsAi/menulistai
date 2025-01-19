@@ -1,0 +1,26 @@
+@import "@styles/abstracts/mixins";
+.profileActionsWrap {
+  .profileHeader {
+    padding: 10px;
+    border-radius: 4px;
+    .profileImage {
+      position: relative;
+      img {
+        border-radius: 4px;
+      }
+    }
+  }
+  .actionsWrap {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--medium-gap);
+    .actionCard {
+      @include transition;
+      //   padding: 5px;
+      width: 100%;
+      cursor: pointer;
+    }
+  }
+}

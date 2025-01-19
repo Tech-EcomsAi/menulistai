@@ -1,0 +1,11 @@
+{
+    "Common": {
+        "fullDate": "{displayDate, date, G}",
+        "longDate": "{displayDate, date, long}",
+        "mediumDate": "{displayDate, date, medium}",
+        "shortDate": "{displayDate, date, short}"
+    },
+    "CraftBuilderHomePage": {
+        "Creativity": "Creativity"
+    }
+}

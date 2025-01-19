@@ -1,0 +1,21 @@
+@import "@styles/abstracts/mixins";
+
+.layoutWrapper {
+  width: 100%;
+  // display: flex;
+  // justify-content: flex-start;
+  // align-items: flex-start;
+  // flex-direction: row;
+  .mainContentWraper {
+    // display: flex;
+    // justify-content: flex-start;
+    // align-items: flex-start;
+    padding: 20px;
+    min-height: calc(100vh - 52px);
+    height: 100%;
+    // overflow: hidden;
+    // min-height: calc(100vh - var(--header-Height));
+    // height: calc(100vh - var(--header-Height));
+    // max-height: calc(100vh - var(--header-Height));
+  }
+}

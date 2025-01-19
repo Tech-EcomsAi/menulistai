@@ -1,0 +1,39 @@
+@import "@styles/abstracts/mixins";
+.galleryImagesWrap {
+  width: 100%;
+  .categoriesWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 10px;
+    border-radius: 4px;
+    overflow: auto;
+    .categoryName {
+      border: 1px solid #dee1ec;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      min-width: max-content;
+      @include transition;
+      &.active,
+      &:hover {
+        background-color: #dee1ec7a;
+        @include transition;
+      }
+    }
+  }
+  .imagesWrap {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    .imageWrap {
+    }
+  }
+}

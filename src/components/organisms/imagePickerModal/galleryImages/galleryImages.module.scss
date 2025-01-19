@@ -1,0 +1,43 @@
+@import "@styles/abstracts/mixins";
+.galleryImagesWrap {
+  width: 100%;
+  overflow: auto;
+  max-height: calc(100vh - 170px);
+  .categoriesWrap {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 10px 0;
+    border-radius: 4px;
+    overflow: auto;
+    .categoryName {
+      border: 1px solid #dee1ec;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      right: 0;
+      left: 0;
+      min-width: max-content;
+      @include transition;
+      &.active,
+      &:hover {
+        // background-color: #dee1ec7a;
+        @include transition;
+      }
+    }
+  }
+  .imagesWrap {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    .imageWrap {
+    }
+  }
+}
