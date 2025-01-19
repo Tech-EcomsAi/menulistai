@@ -135,7 +135,7 @@ function LoginPage() {
               boxShadow: `inset 0 1px 1px 0 rgba(216,236,248,.2), inset 0 24px 48px 0 rgba(168,216,245,.06), 0 16px 32px rgba(0,0,0,.3)`,
             }}>
             <h3 className={`${styles.heading}`} style={{ color: token.colorTextLabel }}>Welcome to</h3>
-            <h1 className={`heading ${styles.heading} ${styles.title}`}>ecoms.ai</h1>
+            <h1 className={`heading ${styles.heading} ${styles.title}`}>Menulist Ai</h1>
             <div className={styles.subHeading} style={{ color: token.colorTextHeading }}>Take your business beyond the four walls</div>
             <div className={styles.googleLoginWrap}>
               <Button type="default"

@@ -1,5 +1,4 @@
 import { Poppins } from "next/font/google";
-// reference: https://fonts.google.com/specimen/Poppins?preview.text=ecoms.ai&query=poppin
 
 export const poppinsFont = Poppins({
     subsets: ['latin'],

@@ -7,9 +7,9 @@
   "description": "Everything App",
   "dir": "auto",
   "lang": "en-US",
-  "id": "https://ecoms.ai",
-  "name": "ecomsai",
-  "short_name": "ecomsai",
+  "id": "https://menulist.ai",
+  "name": "menulistai",
+  "short_name": "menulistai",
   "icons": [
     {
       "src": "icons/icon512maskable.png",
