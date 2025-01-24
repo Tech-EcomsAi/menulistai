@@ -10,7 +10,7 @@ export const NAVIGARIONS_ROUTINGS = {
 
     DASHBOARD: `/dashboard`,
     USERS: `/users`,
-    EDITOR: `/editor`,
+    PROJECTS: `/projects`,
     BILLING: `/billing`,
     PROFILE: `/profile`,
     HISTORY: `/history`,
@@ -31,7 +31,7 @@ export type NavItemType = { key?: any, label: string, route: string, defaultRout
 export const SIDEBAR_DASHBOARD_LAYOUT: NavItemType[] = [
 
     { label: 'Dashboard', route: NAVIGARIONS_ROUTINGS.DASHBOARD, icon: LuLayoutDashboard },
-    { label: 'Editor', route: NAVIGARIONS_ROUTINGS.EDITOR, icon: LuSettings },
+    { label: 'Projects', route: NAVIGARIONS_ROUTINGS.PROJECTS, icon: LuSettings },
     { label: 'Users', route: NAVIGARIONS_ROUTINGS.USERS, icon: LuUsers },
     { label: 'Billing', route: NAVIGARIONS_ROUTINGS.BILLING, icon: LuCreditCard },
     { label: 'Profile', route: NAVIGARIONS_ROUTINGS.PROFILE, icon: LuUser },

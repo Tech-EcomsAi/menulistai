@@ -62,7 +62,6 @@ const uploadImage = async (data, type = '', fileId) => {
     } else return ''
 }
 
-
 export const addNote = async (data: any) => {
     return await apiCallComposer(
         async () => {

@@ -1,149 +1,176 @@
 'use client';
 
-import { Button } from 'antd';
-import { motion } from 'framer-motion';
-import { BiBrain, BiRestaurant, BiSupport } from 'react-icons/bi';
-import { MdOutlineAutoGraph } from 'react-icons/md';
+import { Button, Card, Col, Row, Space, theme, Typography } from 'antd';
+import { AiOutlineGlobal } from 'react-icons/ai';
+import { BiBrain, BiImage, BiRestaurant, BiSupport } from 'react-icons/bi';
+import { FaRobot } from 'react-icons/fa';
+import { MdOutlineAutoGraph, MdOutlineIntegrationInstructions } from 'react-icons/md';
 import GetStartedButton from './getStartedButton';
 import styles from './website.module.scss';
 
-const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.8 }
-    }
-};
-
-const stagger = {
-    animate: {
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
-};
+const { Title, Paragraph, Text } = Typography;
+const { useToken } = theme;
 
 function Website() {
-    return (
-        <div className={styles.websiteContainer}>
-            <motion.div
-                className={styles.hero}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-            >
-                <h1>Revolutionize Your Restaurant with AI</h1>
-                <p>
-                    MenulistAI transforms your restaurant operations with advanced AI technology.
-                    From menu optimization to customer insights, {"we're"} your partner in culinary excellence.
-                </p>
-                <GetStartedButton />
-            </motion.div>
+    const { token } = useToken();
 
-            <div className={styles.features}>
-                <motion.div className={styles.featureGrid} variants={stagger} initial="initial" animate="animate">
-                    {[
-                        {
-                            icon: <BiBrain />,
-                            title: "Smart Menu Analysis",
-                            description: "Our AI analyzes your menu performance and suggests optimizations to maximize profitability."
-                        },
-                        {
-                            icon: <BiRestaurant />,
-                            title: "Restaurant Operations",
-                            description: "Streamline your operations with AI-powered inventory management and staff scheduling."
-                        },
-                        {
-                            icon: <MdOutlineAutoGraph />,
-                            title: "Performance Insights",
-                            description: "Get detailed analytics and insights about your restaurant's performance and customer preferences."
-                        },
-                        {
-                            icon: <BiSupport />,
-                            title: "24/7 Support",
-                            description: "Our dedicated support team is always available to help you make the most of MenulistAI."
-                        }
-                    ].map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            className={styles.featureCard}
-                            variants={fadeInUp}
-                        >
-                            <div className={styles.icon}>{feature.icon}</div>
-                            <h3>{feature.title}</h3>
-                            <p>{feature.description}</p>
-                        </motion.div>
-                    ))}
-                </motion.div>
+    const features = [
+        {
+            icon: <BiBrain style={{ fontSize: 24, color: token.colorPrimary }} />,
+            title: "Smart Extraction",
+            description: "Advanced OCR and AI algorithms automatically extract menu data with high accuracy from images and PDFs."
+        },
+        {
+            icon: <BiRestaurant style={{ fontSize: 24, color: token.colorPrimary }} />,
+            title: "Menu Intelligence",
+            description: "Automatically categorize and structure menu items, prices, and descriptions into a standardized format."
+        },
+        {
+            icon: <MdOutlineAutoGraph style={{ fontSize: 24, color: token.colorPrimary }} />,
+            title: "Data Validation",
+            description: "AI-powered validation ensures accuracy and consistency across all extracted menu data."
+        },
+        {
+            icon: <BiSupport style={{ fontSize: 24, color: token.colorPrimary }} />,
+            title: "24/7 Support",
+            description: "Our dedicated support team is always available to help you with any questions or issues."
+        },
+        {
+            icon: <AiOutlineGlobal style={{ fontSize: 24, color: token.colorPrimary }} />,
+            title: "Multi-Language",
+            description: "Support for multiple languages and automatic language detection for global menu management."
+        },
+        {
+            icon: <MdOutlineIntegrationInstructions style={{ fontSize: 24, color: token.colorPrimary }} />,
+            title: "Easy Integration",
+            description: "Seamlessly integrate with your existing POS, website, or management systems."
+        }
+    ];
+
+    const steps = [
+        {
+            title: "Upload Your Menu",
+            description: "Simply upload your menu in any format - image or PDF. Support for multiple file types including JPG, PNG, and PDF."
+        },
+        {
+            title: "AI Processing",
+            description: "Our AI engine automatically extracts and structures your menu data, categorizing items and validating information."
+        },
+        {
+            title: "Review & Export",
+            description: "Review the structured data, make any necessary adjustments, and export to your preferred format or system."
+        }
+    ];
+
+    return (
+        <div className={styles.websiteContainer} style={{ background: token.colorBgBase }}>
+            <div className={styles.hero}>
+                <Row gutter={[48, 48]} align="middle">
+                    <Col xs={24} lg={12}>
+                        <Title className={styles.mainTitle} style={{ fontSize: 48, marginBottom: token.marginLG }}>
+                            Transform Your Menu Management to Autopilot
+                        </Title>
+                        <Title level={2} style={{ fontSize: 24, marginBottom: token.marginXL }}>
+                            Extract, Structure, and Manage Your Menu Data Automatically
+                        </Title>
+                        <Space direction="vertical" size="large" style={{ marginBottom: token.marginXL }}>
+                            <Space>
+                                <BiImage style={{ fontSize: 20, color: token.colorPrimary }} />
+                                <Text>Intelligent OCR & Text Extraction</Text>
+                            </Space>
+                            <Space>
+                                <FaRobot style={{ fontSize: 20, color: token.colorPrimary }} />
+                                <Text>AI-Powered Data Structuring</Text>
+                            </Space>
+                            <Space>
+                                <AiOutlineGlobal style={{ fontSize: 20, color: token.colorPrimary }} />
+                                <Text>Multi-Language Support</Text>
+                            </Space>
+                        </Space>
+                        <Space size="large">
+                            <GetStartedButton />
+                            <Button type="link" size="large">Watch Demo</Button>
+                        </Space>
+                    </Col>
+                    <Col xs={24} lg={12}>
+                        <img
+                            src="https://placehold.co/800x600/ffffff/808080/png?text=MenuListAI+Dashboard"
+                            alt="MenuListAI Dashboard"
+                            style={{ width: '100%', borderRadius: token.borderRadiusLG }}
+                        />
+                    </Col>
+                </Row>
             </div>
 
-            <motion.div
-                className={styles.capabilities}
-                initial="initial"
-                animate="animate"
-                variants={stagger}
-            >
-                <h2>Advanced Capabilities</h2>
-                {[
-                    {
-                        title: "Menu Optimization",
-                        description: "Our AI analyzes customer preferences, seasonal trends, and pricing strategies to help you create the perfect menu that maximizes both satisfaction and profits.",
-                        image: "https://placehold.co/600x400/000000/808080/png?text=Menu+Optimization"
-                    },
-                    {
-                        title: "Staff Management",
-                        description: "Intelligent scheduling and performance tracking help you manage your team effectively, ensuring optimal staffing levels during peak hours.",
-                        image: "https://placehold.co/600x400/000000/808080/png?text=Staff+Management"
-                    },
-                    {
-                        title: "Customer Analytics",
-                        description: "Gain deep insights into customer behavior, preferences, and ordering patterns to make data-driven decisions that grow your business.",
-                        image: "https://placehold.co/600x400/000000/808080/png?text=Customer+Analytics"
-                    }
-                ].map((capability, index) => (
-                    <motion.div key={index} className={styles.capabilityItem} variants={fadeInUp}>
-                        <div className={styles.content}>
-                            <h3>{capability.title}</h3>
-                            <p>{capability.description}</p>
-                        </div>
-                        <div className={styles.image}>
-                            <img src={capability.image} alt={capability.title} style={{ width: '100%', height: 'auto' }} />
-                        </div>
-                    </motion.div>
-                ))}
-            </motion.div>
+            <div className={styles.trustedBy}>
+                <Text type="secondary" style={{ display: 'block', marginBottom: token.marginLG }}>
+                    Trusted by restaurants worldwide
+                </Text>
+                <Row gutter={[32, 32]} justify="center" align="middle">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <Col key={i}>
+                            <img
+                                src={`https://placehold.co/120x40/ffffff/808080/png?text=Restaurant+${i}`}
+                                alt={`Restaurant ${i}`}
+                                style={{ opacity: 0.7 }}
+                            />
+                        </Col>
+                    ))}
+                </Row>
+            </div>
 
-            <motion.div
-                className={styles.demoSection}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-            >
-                <h2>See MenulistAI in Action</h2>
-                <div className={styles.demoVideo}>
-                    <img
-                        src="https://placehold.co/1000x562/000000/808080/png?text=MenulistAI+Demo"
-                        alt="MenulistAI Demo"
-                        style={{ width: '100%', height: 'auto' }}
-                    />
-                </div>
-            </motion.div>
+            <div className={styles.features}>
+                <Title style={{ textAlign: 'center', marginBottom: token.marginXXL }}>
+                    Everything you need to manage your menu data
+                </Title>
+                <Row gutter={[32, 32]}>
+                    {features.map((feature, index) => (
+                        <Col xs={24} sm={12} lg={8} key={index}>
+                            <Card bordered hoverable>
+                                <Space direction="vertical" size="large">
+                                    {feature.icon}
+                                    <Title level={4}>{feature.title}</Title>
+                                    <Paragraph type="secondary">{feature.description}</Paragraph>
+                                </Space>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
 
-            <motion.div
-                className={styles.cta}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-            >
-                <h2>Ready to Transform Your Restaurant?</h2>
-                <p>Join thousands of restaurants already using MenulistAI to optimize their operations and increase profits.</p>
-                <Button type="primary" size="large" href="/signin">
-                    Start Free Trial
-                </Button>
-            </motion.div>
+            <div className={styles.workflow}>
+                <Title style={{ textAlign: 'center', marginBottom: token.marginXXL }}>
+                    How it works
+                </Title>
+                <Row gutter={[48, 48]}>
+                    {steps.map((step, index) => (
+                        <Col xs={24} md={8} key={index}>
+                            <Space direction="vertical" size="large">
+                                <Text style={{ fontSize: 48, color: token.colorPrimary, opacity: 0.2 }}>
+                                    {String(index + 1).padStart(2, '0')}
+                                </Text>
+                                <Title level={3}>{step.title}</Title>
+                                <Paragraph type="secondary">{step.description}</Paragraph>
+                            </Space>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
+
+            <div className={styles.cta}>
+                <Title style={{ marginBottom: token.marginLG }}>
+                    Ready to Automate Your Menu Management?
+                </Title>
+                <Paragraph style={{ fontSize: 18, marginBottom: token.marginXL }}>
+                    Join leading restaurants using MenuListAI to streamline their operations
+                </Paragraph>
+                <Space size="large">
+                    <Button type="primary" size="large" href="/signin">
+                        Start Free Trial
+                    </Button>
+                    <Button size="large">Schedule Demo</Button>
+                </Space>
+            </div>
         </div>
     );
 }

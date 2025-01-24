@@ -25,6 +25,9 @@ export const DB_COLLECTIONS = {
     TODOS_METADATA: "todosMetadata",
     NOTES: "notes",
     NOTES_METADATA: "notesMetadata",
+
+    PROJECTS: "projects",
+    PROJECTS_METADATA: "projectsMetadata",
 }
 
 export const FONT_PRESET_ASSET_COLLECTION = "fontPreset";

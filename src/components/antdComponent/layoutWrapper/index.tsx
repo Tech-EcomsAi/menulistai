@@ -34,7 +34,7 @@ export default function AntdLayoutWrapper(props: any) {
             return <Layout className={`${styles.layoutWrapper}`} dir={isRTLDirection ? "rtl" : "ltr"} >
                 <HeadMetaTags title={undefined} description={undefined} image={undefined} siteName={undefined} storeData={undefined} />
                 <Fragment>
-                    <Layout style={isVerticalSidebar ? { paddingLeft: isCollapsed ? "62px" : "200px" } : {}}>
+                    <Layout style={isVerticalSidebar ? { paddingLeft: isCollapsed ? "62px" : "200px", paddingTop: isVerticalSidebar ? 52 : "0px" } : {}}>
                         <HeaderComponent />
                         {isVerticalSidebar ? <SidebarComponent /> : <HorizontalSidebar />}
                         <AppSettingsPanel />

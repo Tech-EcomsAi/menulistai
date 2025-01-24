@@ -52,7 +52,7 @@ const HeaderComponent = () => {
                 background: headerBgBlured ? token.colorBgBlur : token.colorBgBase,
                 color: token.colorTextBase,
                 borderBottom: `1px solid ${token.colorBorder}`,
-                position: fixedHeader ? "sticky" : "static",
+                position: fixedHeader ? "fixed" : "static",
                 backdropFilter: headerBgBlured ? "blur(20px)" : "none"
             }}
         >
