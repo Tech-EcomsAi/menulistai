@@ -1,6 +1,7 @@
 import { addProject, updateProjectMetadata } from '@database/projects';
 import { Badge, Button, Card, Flex, Form, Input, Modal, Popover, Space, Switch, Typography, message, theme } from 'antd';
 import { useState } from 'react';
+import { IoChevronDown } from "react-icons/io5";
 import { LuFileEdit, LuFolderOpen, LuPlus } from 'react-icons/lu';
 import { ProjectMetadata } from './type';
 
@@ -115,20 +116,14 @@ export const ProjectSelector = ({
                                         </Badge>
                                     </Card>
                                 ))}
-                                <Button
-                                    type="dashed"
-                                    icon={<LuPlus />}
-                                    block
-                                    onClick={() => openModal()}
-                                >
-                                    Add New Project
-                                </Button>
+                                <Button type="dashed" icon={<LuPlus />} block onClick={() => openModal()}>Add New Project</Button>
                             </Space>
                         </div>
                     }
                 >
-                    <Button style={{ minWidth: 200 }} icon={<LuFolderOpen />} >
+                    <Button style={{ minWidth: 200 }} icon={<LuFolderOpen />}>
                         Current Project:  {selectedProject ? selectedProject.name : 'Select Project'}
+                        <IoChevronDown style={{ marginLeft: 8 }} />
                     </Button>
                 </Popover>
             </Space>

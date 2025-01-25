@@ -5,7 +5,7 @@ import { useAppSelector } from '@hook/useAppSelector';
 import HeadMetaTags from '@organisms/headMetaTags';
 import HorizontalSidebar from '@organisms/sidebar/horizontalSidebar';
 import AntdThemeProvider from '@providers/antdThemeProvider';
-import { getDarkModeState, getRTLDirectionState, getSidebarLayoutState, getSidebarState } from '@reduxSlices/clientThemeConfig';
+import { getDarkModeState, getHeaderPositionState, getRTLDirectionState, getSidebarLayoutState, getSidebarState } from '@reduxSlices/clientThemeConfig';
 import { Layout, theme } from 'antd';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
@@ -25,6 +25,7 @@ export default function AntdLayoutWrapper(props: any) {
     const { token } = theme.useToken();
     const pathname = usePathname();
     const isVerticalSidebar = useAppSelector(getSidebarLayoutState)
+    const fixedHeader = useAppSelector(getHeaderPositionState)
 
     const renderContent = () => {
 
@@ -34,13 +35,14 @@ export default function AntdLayoutWrapper(props: any) {
             return <Layout className={`${styles.layoutWrapper}`} dir={isRTLDirection ? "rtl" : "ltr"} >
                 <HeadMetaTags title={undefined} description={undefined} image={undefined} siteName={undefined} storeData={undefined} />
                 <Fragment>
-                    <Layout style={isVerticalSidebar ? { paddingLeft: isCollapsed ? "62px" : "200px", paddingTop: isVerticalSidebar ? 52 : "0px" } : {}}>
+                    <Layout style={isVerticalSidebar ? { paddingLeft: isCollapsed ? "62px" : "200px", paddingTop: (isVerticalSidebar && fixedHeader) ? 52 : 0 } : {}}>
                         <HeaderComponent />
                         {isVerticalSidebar ? <SidebarComponent /> : <HorizontalSidebar />}
                         <AppSettingsPanel />
                         <Content className={styles.mainContentWraper}
                             style={{
-                                background: isDarkMode ? token.colorFillContent : token.colorBgBase,
+                                backgroundImage: isDarkMode ? `radial-gradient(#dee1ec57 0.8px, transparent 0)` : `radial-gradient(#cbcbcb 1px, transparent 0)`,
+                                // background: isDarkMode ? token.colorFillContent : token.colorBgBase,
                                 minHeight: isVerticalSidebar ? 'calc(100vh - 52px)' : 'calc(100vh - 98px)',
                                 width: "100%"
                             }}>

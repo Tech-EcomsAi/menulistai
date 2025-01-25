@@ -1,7 +1,7 @@
-import { CheckCircleFilled, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Modal, Spin, Tag, Tooltip, theme } from 'antd';
+import { CheckCircleFilled } from '@ant-design/icons';
+import { Button, Card, Flex, Image, Popconfirm, Spin, Tag, Tooltip, theme } from 'antd';
 import { useState } from 'react';
-import { LuFileText } from 'react-icons/lu';
+import { LuEye, LuFileText, LuTrash } from 'react-icons/lu';
 import { ProjectFileType } from './type';
 
 const { useToken } = theme;
@@ -16,24 +16,18 @@ export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
 
     console.log("files", files)
     const { token } = useToken();
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    const [previewTitle, setPreviewTitle] = useState('');
+    const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
+    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
     const handlePreview = async (file: ProjectFileType) => {
         if (!file.url) return;
-
-        setPreviewImage(file.url);
-        setPreviewOpen(true);
-        setPreviewTitle(file.name || 'Image');
+        setPreviewFile(file);
     };
-
-    const handleCancel = () => setPreviewOpen(false);
 
     return (
         <>
             <div>
-                <Flex gap={30} wrap={"wrap"}>
+                <Flex gap={20} wrap={"wrap"}>
                     {files.map((file) => {
                         const isImage = file.type?.startsWith('image/');
                         return (
@@ -42,30 +36,76 @@ export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
                                 onClick={() => isImage && handlePreview(file)}
                                 size="small"
                                 hoverable
+                                onMouseEnter={() => setHoveredCard(file.uid)}
+                                onMouseLeave={() => setHoveredCard(null)}
                                 cover={
                                     <>
-                                        {(Boolean(file.charges) || (fileProcessingId === file.uid)) && (
-                                            <div style={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                left: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                background: token.colorBgMask,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                zIndex: 1
-                                            }}>
+                                        {(Boolean(file.charges) || (fileProcessingId === file.uid) || hoveredCard === file.uid) && (
+                                            <div className='animate__animated animate__fadeIn animate__faster'
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    background: token.colorBgMask,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    flexDirection: 'column',
+                                                    gap: 20,
+                                                    zIndex: 1
+                                                }}>
                                                 {Boolean(file.charges) && (
                                                     <Tooltip title={`Processed in ${(file.processingTime! / 1000).toFixed(1)} seconds`}>
-                                                        <Flex vertical align='center' justify='center' gap={10}>
+                                                        <Flex className='animate__animated animate__fadeInLeft animate__faster' vertical align='center' justify='center' gap={10}>
                                                             <CheckCircleFilled style={{ fontSize: 40, color: token.colorSuccess }} />
                                                             <Tag color={token.colorSuccess}>{(file.processingTime! / 1000).toFixed(1)} s</Tag>
+                                                            <Tag color={token.colorPrimary}>{file.inputToken + file.inputToken} Tokens</Tag>
                                                         </Flex>
                                                     </Tooltip>
                                                 )}
                                                 {fileProcessingId === file.uid && (<Spin size="large" />)}
+                                                {hoveredCard === file.uid && (
+                                                    <Flex align='center' justify='center' gap={10}>
+                                                        {isImage && (
+                                                            <Button
+                                                                shape='circle'
+                                                                className='animate__animated animate__fadeInLeft animate__faster'
+                                                                icon={<LuEye style={{ fontSize: 18 }} />}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handlePreview(file);
+                                                                }}
+                                                            />
+                                                        )}
+                                                        <Popconfirm
+                                                            title="Delete processed image"
+                                                            description="This image has already been processed and tokens have been used. Are you sure you want to delete it?"
+                                                            okText="Yes, delete"
+                                                            cancelText="No, keep it"
+                                                            okButtonProps={{ danger: true }}
+                                                            open={file.charges ? undefined : false}
+                                                            onConfirm={(e) => {
+                                                                e?.stopPropagation();
+                                                                onRemove(file.uid);
+                                                            }}
+                                                        >
+                                                            <Button
+                                                                shape='circle'
+                                                                className='animate__animated animate__fadeInRight animate__faster'
+                                                                danger
+                                                                icon={<LuTrash style={{ fontSize: 18 }} />}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (!file.charges) {
+                                                                        onRemove(file.uid);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </Popconfirm>
+                                                    </Flex>
+                                                )}
                                             </div>
                                         )}
                                         {isImage ? (
@@ -78,9 +118,8 @@ export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
                                                 justifyContent: 'center',
                                                 background: token.colorFillAlter
                                             }}>
-                                                <img
+                                                <Image
                                                     alt={file.name}
-                                                    src={file.url}
                                                     style={{
                                                         maxWidth: '100%',
                                                         maxHeight: '100%',
@@ -88,6 +127,8 @@ export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
                                                         height: 'auto',
                                                         objectFit: 'cover'
                                                     }}
+                                                    src={file.url}
+                                                    preview={true}
                                                 />
                                             </div>
                                         ) : (
@@ -103,29 +144,6 @@ export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
                                         )}
                                     </>
                                 }
-                                actions={[
-                                    <Button
-                                        block
-                                        key="view"
-                                        type="text"
-                                        icon={<EyeOutlined />}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            isImage && handlePreview(file)
-                                        }}
-                                    />,
-                                    <Button
-                                        block
-                                        key="delete"
-                                        type="text"
-                                        danger
-                                        icon={<DeleteOutlined />}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onRemove(file.uid)
-                                        }}
-                                    />
-                                ]}
                             >
                                 <Card.Meta title={file.name} description={`${(file.size! / 1024 / 1024).toFixed(2)} MB`} />
                             </Card>
@@ -133,15 +151,20 @@ export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
                     })}
                 </Flex>
             </div>
-
-            <Modal
-                open={previewOpen}
-                title={previewTitle}
-                footer={null}
-                onCancel={handleCancel}
-            >
-                <img alt={previewTitle} style={{ width: '100%' }} src={previewImage} />
-            </Modal>
+            {previewFile && (
+                <Image
+                    alt={previewFile.name}
+                    src={previewFile.url}
+                    style={{ display: "none" }}
+                    preview={{
+                        onVisibleChange: (visible) => {
+                            if (!visible) setPreviewFile(null)
+                        },
+                        visible: true,
+                        src: previewFile.url,
+                    }}
+                />
+            )}
         </>
     );
 }

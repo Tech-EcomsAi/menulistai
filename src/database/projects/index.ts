@@ -71,13 +71,7 @@ export const addProject = async (data: Partial<ProjectMetadata>) => {
             const projectId = data.projectId || metadataRef.id;
 
             // Handle project data
-            const projectData = await requestBodyComposer({
-                projectId,
-                uploadedData: [],
-                response: [],
-                active: true,
-                deleted: false
-            });
+            const projectData = await requestBodyComposer({ projectId, files: [] });
 
             // Use the same ID for project data
             const dataRef = doc(await getDataCollectionRef(), projectId);

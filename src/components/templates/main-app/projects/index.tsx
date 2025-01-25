@@ -2,14 +2,16 @@
 
 import { getProjectData, getProjects } from '@database/projects';
 import { getBase64, removeObjRef } from '@util/utils';
-import { Button, Card, Empty, Flex, Steps, Typography, Upload, message, theme } from 'antd';
+import { Button, Empty, Flex, Typography, Upload, message, theme } from 'antd';
 import type { UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
 import { useEffect, useState } from 'react';
-import { LuScanLine, LuSmile, LuUpload } from 'react-icons/lu';
+import { LuArrowRight, LuUpload } from 'react-icons/lu';
+import { TbUpload } from 'react-icons/tb';
 import { DummyModelResponses } from './data';
 import Editor from './Editor';
 import { FileList } from './FileList';
-import { ProjectSelector } from './ProjectSelector';
+import LanguageSelector from './LanguageSelector';
+import { ProjectHeader } from './ProjectHeader';
 import { Project, ProjectMetadata } from './type';
 
 const { Dragger } = Upload;
@@ -27,6 +29,24 @@ function ProjectsPage() {
     //1: File Upload view
     //2: Response editor view
     //3: Catalogue view
+    const [allLanguages, setAllLanguages] = useState<Set<string>>(new Set(['English (en)', 'Spanish (es)', 'French (fr)', 'German (de)', 'Italian (it)']));
+    const [selectedLanguages, setSelectedLanguages] = useState<Set<string>>(new Set(['English (en)']));
+
+    const handleLanguageToggle = (language: string) => {
+        const newSelected = new Set(selectedLanguages);
+        if (selectedLanguages.has(language)) {
+            // Prevent deselecting the last language
+            if (selectedLanguages.size <= 1) {
+                message.warning('At least one language must remain selected');
+                return;
+            }
+            newSelected.delete(language);
+        } else {
+            newSelected.add(language);
+        }
+        setSelectedLanguages(newSelected);
+    };
+
     useEffect(() => {
         fetchProjects();
     }, []);
@@ -68,7 +88,7 @@ function ProjectsPage() {
         const startTime = Date.now();
 
         // Simulate processing delay
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Calculate processing time
         const processingTime = Date.now() - startTime;
@@ -96,6 +116,11 @@ function ProjectsPage() {
     const handleUploadAndContinue = async () => {
         if (!selectedProject) {
             message.error('Please select a project first');
+            return;
+        }
+
+        if (!projectData?.files?.length) {
+            message.error('Please upload at least one file to continue');
             return;
         }
 
@@ -127,16 +152,24 @@ function ProjectsPage() {
         }
     };
 
-    const handleRemove = async (id: string) => {
-        const newFiles = projectData?.files?.filter(f => f.uid !== id);
-        const projectDataCopy: Project = removeObjRef(projectData)
-        projectDataCopy.files = newFiles;
-        setProjectData(projectDataCopy);
+    const handleRemove = (id: string) => {
+        if (projectData?.files) {
+            const updatedFiles = projectData.files.filter(file => file.uid !== id);
+            const projectDataCopy: Project = removeObjRef(projectData);
+            projectDataCopy.files = updatedFiles;
+            setProjectData(projectDataCopy);
+
+            // If no files left, move back to view 1
+            if (updatedFiles.length === 0) {
+                setCurrentView(1);
+            }
+        }
     };
 
     const uploadProps: UploadProps = {
         name: 'file',
         multiple: true,
+        style: { background: token.colorBgLayout },
         fileList: projectData?.files?.map((file) => ({
             uid: file.uid || file.url || String(Math.random()),  // Use src/url as id or generate random
             name: file.name || 'Untitled',
@@ -194,89 +227,72 @@ function ProjectsPage() {
     };
 
     if (loading) {
-        return <Card loading={true} />;
+        return <Flex vertical gap={20} justify='center' align='center' style={{ height: '100vh' }}><Empty /></Flex>;
     }
 
     return (
-        <>
-            <Flex vertical gap={10}>
-                <Card size='small'>
-                    <Flex justify='space-between' align='center'>
-                        <ProjectSelector
-                            setSelectedProject={setSelectedProject}
-                            setProjects={setProjects}
-                            projects={projects}
-                            selectedProject={selectedProject || null}
-                            onProjectSelect={(projectMetadata) => {
-                                const project = projects.find(p => p.projectId === projectMetadata.projectId);
-                                if (project) {
-                                    setSelectedProject(project);
-                                }
-                            }}
-                        />
-                        <Steps
-                            current={currentView - 1}
-                            items={[
-                                { icon: <LuUpload />, title: 'Upload' },
-                                { icon: <LuScanLine />, title: 'Edit' },
-                                { icon: <LuSmile />, title: 'Design' },
-                            ]}
-                            style={{ width: '100%', maxWidth: 400 }}
-                        />
-                        <Button onClick={() => {
-                            if (selectedProject) {
-                                // Reset files in the current project
-                                setProjectData(prev => ({ ...prev, files: [] }));
-                            }
-                            // Reset to upload view
-                            setCurrentView(1);
-                        }}>Start Over</Button>
-                    </Flex>
-                </Card>
-                <Card >
-                    <Flex vertical gap={30} style={{ width: '100%' }} align='center' justify='flex-start'>
+        <Flex vertical gap={10}>
+            <ProjectHeader
+                projects={projects}
+                selectedProject={selectedProject}
+                currentView={currentView}
+                setSelectedProject={setSelectedProject}
+                setProjects={setProjects}
+                setProjectData={setProjectData}
+                setCurrentView={setCurrentView}
+            />
+            <Flex vertical gap={30} style={{ width: '100%' }} align='center' justify='flex-start'>
 
-
-                        {currentView == 1 && <>
-                            <Flex gap={30} vertical align='center' justify='center' style={{ width: '100%' }}>
-                                <Dragger {...uploadProps}>
-                                    <Flex gap={16} align='center' justify='center' style={{ width: '100%' }}>
-                                        <Empty description="" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                                    </Flex>
-                                    <p className="ant-upload-text" style={{ fontSize: 16, marginBottom: 8 }}>
-                                        Click or drag files to this area to upload (JPG, PNG, or PDF format)
-                                    </p>
-                                    <p className="ant-upload-hint" style={{ color: token.colorTextDescription }}>
-                                        Support for single or bulk upload. Strictly prohibited from uploading company data or other
-                                        banned files. Maximum file size: 10MB
-                                    </p>
-                                </Dragger>
-
-                                {projectData?.files?.length > 0 && (<FileList
-                                    fileProcessingId={fileProcessingId}
-                                    files={projectData.files}
-                                    onRemove={handleRemove}
-                                />)}
+                {currentView == 1 && <>
+                    <Flex gap={20} vertical align='center' justify='center' style={{ width: '100%' }}>
+                        <Dragger {...uploadProps}>
+                            <Flex gap={16} align='center' justify='center' style={{ width: '100%', marginBottom: 10 }}>
+                                <Empty description={<Button icon={<LuUpload />}>Browse Files</Button>} image={<TbUpload fontSize={64} style={{ color: token.colorPrimary }} />} />
                             </Flex>
-                        </>}
 
-                        {currentView == 2 && <>
-                            <Flex gap={30} vertical align='center' justify='center' style={{ width: '100%' }}>
-                                <Editor projectData={projectData} />
-                            </Flex>
-                        </>}
+                            <p className="ant-upload-text" style={{ fontSize: 16, marginBottom: 8 }}>
+                                Click or drag files to this area to upload (JPG, PNG, or PDF format)
+                            </p>
+                            <p className="ant-upload-hint" style={{ color: token.colorTextDescription }}>
+                                Support for single or bulk upload. Strictly prohibited from uploading company data or other
+                                banned files. Maximum file size: 10MB
+                            </p>
+                        </Dragger>
 
-
-
+                        <LanguageSelector
+                            // title="Select Target Languages"
+                            description="Choose the languages you want to extract menu items in"
+                            allLanguages={allLanguages}
+                            selectedLanguages={selectedLanguages}
+                            onLanguageToggle={handleLanguageToggle}
+                        />
+                        {projectData?.files?.length > 0 && (<FileList
+                            fileProcessingId={fileProcessingId}
+                            files={projectData.files}
+                            onRemove={handleRemove}
+                        />)}
                     </Flex>
-                </Card>
+                </>}
+
+                {currentView == 2 && <>
+                    <Flex gap={10} vertical align='center' justify='center' style={{ width: '100%' }}>
+                        <Editor
+                            projectData={projectData}
+                            onRemove={handleRemove}
+                            selectedLanguages={selectedLanguages}
+                            setSelectedLanguages={setSelectedLanguages}
+                            allLanguages={allLanguages}
+                            setAllLanguages={setAllLanguages}
+                        />
+                    </Flex>
+                </>}
+
             </Flex>
-
             {projectData?.files?.length > 0 && (
                 <Button
                     onClick={handleUploadAndContinue}
                     type="primary"
-                    icon={<LuUpload />}
+                    icon={projectData?.files?.some(file => !file.charges) ? <LuUpload /> : <LuArrowRight />}
                     shape='round'
                     size='large'
                     style={{
@@ -289,10 +305,9 @@ function ProjectsPage() {
                     }}
                     disabled={!selectedProject || projectData?.files?.length === 0}
                 >
-                    Upload & Scan
-                </Button>
-            )}
-        </>
+                    {projectData?.files?.some(file => !file.charges) ? 'Upload & Continue' : 'Continue'}
+                </Button>)}
+        </Flex>
     );
 }
 

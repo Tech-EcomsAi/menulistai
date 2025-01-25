@@ -1,84 +1,201 @@
+import { Button, Card, Empty, Flex, Image, message, Popconfirm, Splitter, Tag, theme, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { LuEye, LuFileText, LuLayoutGrid, LuList, LuTrash } from "react-icons/lu";
+import EditorContent from "./EditorContent";
+import LanguageSelector from "./LanguageSelector";
+import ZoomableImage from "./ZoomableImage";
 import { Project, ProjectFileType } from "./type";
-import { Row, Col, Card, Typography, Image, Form, Input, Select, Empty } from "antd";
-import { useState } from "react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
-function Editor({ projectData }: { projectData: Project }) {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [form] = Form.useForm();
+function Editor({
+    projectData,
+    onRemove,
+    selectedLanguages,
+    setSelectedLanguages,
+    allLanguages,
+    setAllLanguages
+}: {
+    projectData: Project,
+    onRemove: (id: string) => void,
+    selectedLanguages: Set<string>,
+    setSelectedLanguages: (languages: Set<string>) => void,
+    allLanguages: Set<string>,
+    setAllLanguages: (languages: Set<string>) => void
+}) {
+    const { token } = theme.useToken();
+    const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
 
-    const handleFormChange = (changedValues: any, allValues: any) => {
-        console.log("Form changed:", changedValues, allValues);
-        // Here you can implement the logic to update the modelResponse
+    // Process languages in useEffect instead of during render
+    useEffect(() => {
+        if (!projectData.files) return;
+
+        let hasNewLanguages = false;
+        const newAllLanguages = new Set(allLanguages);
+        const newSelectedLanguages = new Set(selectedLanguages);
+
+        projectData.files.forEach(file => {
+            if (file.modelResponse?.data) {
+                const { languages } = file.modelResponse.data;
+                languages?.forEach(lang => {
+                    const langString = `${lang.name} (${lang.code})`;
+                    if (!allLanguages.has(langString)) {
+                        hasNewLanguages = true;
+                        newAllLanguages.add(langString);
+                        newSelectedLanguages.add(langString);
+                    }
+                });
+            }
+        });
+
+        if (hasNewLanguages) {
+            setAllLanguages(newAllLanguages);
+            setSelectedLanguages(newSelectedLanguages);
+        }
+    }, [projectData.files, allLanguages, selectedLanguages, setAllLanguages, setSelectedLanguages]);
+
+    if (!projectData.files || projectData.files.length === 0) {
+        return (
+            <Card>
+                <Empty description="No images uploaded" />
+            </Card>
+        );
+    }
+
+    let totalCategories = 0;
+    let totalItems = 0;
+
+    projectData.files.forEach(file => {
+        if (file.modelResponse?.data) {
+            const { categories, items } = file.modelResponse.data;
+            totalCategories += categories?.length || 0;
+            totalItems += items?.length || 0;
+        }
+    });
+
+    const handleLanguageToggle = (language: string) => {
+        const newSelected = new Set(selectedLanguages);
+        if (selectedLanguages.has(language)) {
+            // Prevent deselecting the last language
+            if (selectedLanguages.size <= 1) {
+                message.warning('At least one language must remain selected');
+                return;
+            }
+            newSelected.delete(language);
+        } else {
+            newSelected.add(language);
+        }
+        setSelectedLanguages(newSelected);
     };
 
-    const currentFile: ProjectFileType | undefined = projectData.files?.[currentImageIndex];
+    const StatChip = ({ icon: Icon, label, count, color }: { icon: any, label: string, count: number, color: string }) => (
+        <Tag
+            style={{
+                padding: '6px 12px',
+                borderRadius: '16px',
+                fontSize: 12,
+                background: token.colorBgContainer,
+                border: `1px solid ${token.colorBorder}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                margin: '4px'
+            }}
+        >
+            <Icon style={{ fontSize: 14, color }} />
+            <span>{label}: <Text strong>{count}</Text></span>
+        </Tag>
+    );
 
     return (
-        <Row gutter={[16, 16]}>
-            <Col span={12}>
-                <Card>
-                    <Title level={4}>Uploaded Image</Title>
-                    {projectData.files && projectData.files.length > 0 ? (
-                        <>
-                            <Image
-                                src={currentFile?.url}
-                                alt={`Image ${currentImageIndex + 1}`}
-                                style={{ width: '100%', marginBottom: 16 }}
+        <Flex vertical gap={10} style={{ width: '100%' }}>
+            {allLanguages.size > 0 && (
+                <Card size="small" style={{
+                    width: '100%',
+                    background: token.colorBgLayout,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 9999
+                }}>
+                    <Flex gap={16} justify="space-between">
+                        <Flex gap={8} wrap="wrap">
+                            <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
+                            <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
+                            <StatChip icon={LuList} label="Items" count={totalItems} color={token.colorSuccess} />
+                        </Flex>
+
+                        <Flex gap={8} wrap="wrap">
+                            <LanguageSelector
+                                allLanguages={allLanguages}
+                                selectedLanguages={selectedLanguages}
+                                onLanguageToggle={handleLanguageToggle}
+                                style={{ marginTop: 0 }}
                             />
-                            <Row justify="space-between" align="middle">
-                                <Text>
-                                    Image {currentImageIndex + 1} of {projectData.files.length}
-                                </Text>
-                                <Row gutter={8}>
-                                    <Col>
-                                        <Select
-                                            value={currentImageIndex}
-                                            onChange={setCurrentImageIndex}
-                                            style={{ width: 120 }}
-                                        >
-                                            {projectData.files.map((file, index) => (
-                                                <Select.Option key={index} value={index}>
-                                                    {file.name || `Image ${index + 1}`}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Col>
-                                </Row>
-                            </Row>
-                        </>
-                    ) : (
-                        <Empty description="No images uploaded" />
-                    )}
+                        </Flex>
+                    </Flex>
                 </Card>
-            </Col>
-            <Col span={12}>
-                <Card>
-                    <Title level={4}>Model Response</Title>
-                    {currentFile?.modelResponse ? (
-                        <Form
-                            form={form}
-                            layout="vertical"
-                            initialValues={currentFile.modelResponse}
-                            onValuesChange={handleFormChange}
-                        >
-                            <Form.Item label="Languages" name={["data", "languages"]}>
-                                <Input.TextArea autoSize={{ minRows: 2 }} />
-                            </Form.Item>
-                            <Form.Item label="Categories" name={["data", "categories"]}>
-                                <Input.TextArea autoSize={{ minRows: 3 }} />
-                            </Form.Item>
-                            <Form.Item label="Items" name={["data", "items"]}>
-                                <Input.TextArea autoSize={{ minRows: 6 }} />
-                            </Form.Item>
-                        </Form>
-                    ) : (
-                        <Empty description="No model response available" />
-                    )}
+            )}
+
+            {projectData.files.map((file: ProjectFileType, index: number) => (
+                <Card key={index} size="small" style={{ width: '100%', background: token.colorBgLayout }}>
+                    <Splitter>
+                        <Splitter.Panel defaultSize={300} min={300} max="50%" style={{ display: "flex", justifyContent: "center", position: "relative" }}>
+                            <div style={{ position: "absolute", top: 8, right: 18, zIndex: 1 }}>
+                                <Flex gap={8}>
+                                    <Button
+                                        icon={<LuEye style={{ fontSize: 16 }} />}
+                                        onClick={() => setPreviewFile(file)}
+                                        shape="circle"
+                                    />
+                                    <Popconfirm
+                                        title="Delete processed image"
+                                        description="This image has already been processed and tokens have been used. Are you sure you want to delete it?"
+                                        okText="Yes, delete"
+                                        cancelText="No, keep it"
+                                        okButtonProps={{ danger: true }}
+                                        open={file.charges ? undefined : false}
+                                        onConfirm={(e) => {
+                                            e?.stopPropagation();
+                                            onRemove(file.uid);
+                                        }}
+                                    >
+                                        <Button
+                                            danger
+                                            icon={<LuTrash style={{ fontSize: 16 }} />}
+                                            shape="circle"
+                                        />
+                                    </Popconfirm>
+                                </Flex>
+                            </div>
+                            <Flex style={{ width: '100%', overflow: 'auto' }}>
+                                <ZoomableImage
+                                    src={file.url}
+                                    alt={file.name || `Image ${index + 1}`}
+                                    style={{ width: '100%', minWidth: 300, paddingRight: 10 }}
+                                />
+                            </Flex>
+                        </Splitter.Panel>
+                        <Splitter.Panel>
+                            <EditorContent file={file} />
+                        </Splitter.Panel>
+                    </Splitter>
                 </Card>
-            </Col>
-        </Row>
+            ))}
+            {previewFile && (
+                <Image
+                    alt={previewFile.name}
+                    src={previewFile.url}
+                    style={{ display: "none" }}
+                    preview={{
+                        onVisibleChange: (visible) => {
+                            if (!visible) setPreviewFile(null)
+                        },
+                        visible: true,
+                        src: previewFile.url,
+                    }}
+                />
+            )}
+        </Flex>
     );
 }
 
