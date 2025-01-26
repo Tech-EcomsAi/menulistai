@@ -5,8 +5,6 @@ import { HOME_ROUTING, NAVIGARIONS_ROUTINGS } from "@constant/navigations";
 import { useAppSelector } from "@hook/useAppSelector";
 import { firebaseAuth } from "@lib/firebase/firebaseClient";
 import { getDarkModeState, toggleDarkMode } from "@reduxSlices/clientThemeConfig";
-import { toggleLoader } from "@reduxSlices/loader";
-import { showErrorToast, showSuccessToast } from "@reduxSlices/toast";
 import { Button, Form, Input, Space, theme } from "antd";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useSession } from "next-auth/react";
@@ -21,7 +19,6 @@ const LOGIN_ERRORS = {
     "UNREGISTRED": "email-not-registred",
 }
 
-
 function ForgotPasswordPage() {
 
     const session = useSession();
@@ -29,7 +26,6 @@ function ForgotPasswordPage() {
     const [error, setError] = useState({ id: '', message: '' });
     const { token } = theme.useToken();
     const isDarkMode = useAppSelector(getDarkModeState)
-    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter();
 
     useEffect(() => {
@@ -39,26 +35,19 @@ function ForgotPasswordPage() {
         }
     }, [])
 
-    const forgotPassword = async (values: any) => {
-        dispatch(toggleLoader("ForgotPasswordPage:forgotPassword"))
-        sendPasswordResetEmail(firebaseAuth, values.email)
+    const forgotPassword = async (email: string) => {
+        return sendPasswordResetEmail(firebaseAuth, email)
             .then(() => {
-                dispatch(toggleLoader(false))
-                dispatch(showSuccessToast("Password reset email sent !"))
+                return { success: true };
             })
             .catch((error) => {
-                dispatch(toggleLoader(false))
                 if (error.code.includes(LOGIN_ERRORS.INVALID_EMAIL)) {
-                    dispatch(showErrorToast("Invalid email"))
-                    setError({ id: "cread", message: "Invalid email" })
+                    return { success: false, message: "Invalid email" };
                 } else if (error.code.includes(LOGIN_ERRORS.UNREGISTRED)) {
-                    dispatch(showErrorToast("Email not registered"))
-                    setError({ id: "cread", message: "Invalid email" })
+                    return { success: false, message: "Email not registered" };
                 } else {
-                    dispatch(showErrorToast("Somthing went wrong"))
-                    setError({ id: "cread", message: "Somthing went wrong, please try again !" })
+                    return { success: false, message: "Somthing went wrong, please try again !" };
                 }
-                console.log("error", error)
             });
     }
 
@@ -124,7 +113,7 @@ function ForgotPasswordPage() {
                                 </Form.Item> */}
                             {error.message && <div className={styles.error}>{error.message}</div>}
                             <Space direction="vertical" align="center" style={{ width: "100%" }} >
-                                <Button loading={isLoading} type="primary" size="large" htmlType="submit" style={{ width: 275 }} className="login-form-button">Send Forgot Password Email</Button>
+                                <Button type="primary" size="large" htmlType="submit" style={{ width: 275 }} className="login-form-button">Send Forgot Password Email</Button>
                             </Space>
 
                             <Space direction="vertical" align="center" style={{ width: "100%", marginTop: 20 }} onClick={() => router.push(`/${NAVIGARIONS_ROUTINGS.SIGNIN}`)}>

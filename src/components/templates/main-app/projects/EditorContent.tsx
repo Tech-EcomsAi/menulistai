@@ -29,9 +29,10 @@ export function EditorContent({ file }: EditorContentProps) {
 
     return (
         <Card
+            style={{ height: 'max-content', background: token.colorBgLayout }}
             size="small"
             bordered={false}
-            style={{ height: 'max-content', background: token.colorBgLayout }}
+            styles={{ body: { padding: "0 10px" } }}
         >
             {file.modelResponse ? (
                 <Flex vertical gap={24}>

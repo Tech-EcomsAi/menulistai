@@ -1,6 +1,6 @@
 import { Button, Card, Empty, Flex, Image, message, Popconfirm, Splitter, Tag, theme, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { LuEye, LuFileText, LuLayoutGrid, LuList, LuTrash } from "react-icons/lu";
+import { LuArrowLeft, LuEye, LuFileText, LuLayoutGrid, LuList, LuTrash } from "react-icons/lu";
 import EditorContent from "./EditorContent";
 import LanguageSelector from "./LanguageSelector";
 import ZoomableImage from "./ZoomableImage";
@@ -14,14 +14,18 @@ function Editor({
     selectedLanguages,
     setSelectedLanguages,
     allLanguages,
-    setAllLanguages
+    setAllLanguages,
+    setCurrentView,
+    currentView
 }: {
     projectData: Project,
     onRemove: (id: string) => void,
     selectedLanguages: Set<string>,
     setSelectedLanguages: (languages: Set<string>) => void,
     allLanguages: Set<string>,
-    setAllLanguages: (languages: Set<string>) => void
+    setAllLanguages: (languages: Set<string>) => void,
+    setCurrentView: (view: number) => void,
+    currentView: number
 }) {
     const { token } = theme.useToken();
     const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
@@ -110,15 +114,18 @@ function Editor({
     return (
         <Flex vertical gap={10} style={{ width: '100%' }}>
             {allLanguages.size > 0 && (
-                <Card size="small" style={{
-                    width: '100%',
-                    background: token.colorBgLayout,
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 9999
-                }}>
-                    <Flex gap={16} justify="space-between">
-                        <Flex gap={8} wrap="wrap">
+                <Card size="small"
+                    styles={{ body: { padding: "4px 12px" } }}
+                    style={{
+                        width: '100%',
+                        // background: token.colorBgLayout,
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 9999
+                    }}>
+                    <Flex gap={16} justify="space-between" align="center">
+                        <Flex gap={8} wrap="wrap" align="center">
+                            <Button icon={<LuArrowLeft />} onClick={() => setCurrentView(currentView - 1)}>Back</Button>
                             <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
                             <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
                             <StatChip icon={LuList} label="Items" count={totalItems} color={token.colorSuccess} />
@@ -137,7 +144,7 @@ function Editor({
             )}
 
             {projectData.files.map((file: ProjectFileType, index: number) => (
-                <Card key={index} size="small" style={{ width: '100%', background: token.colorBgLayout }}>
+                <Card key={index} size="small" style={{ width: '100%', background: token.colorBgLayout }} styles={{ body: { paddingBottom: 0 } }}>
                     <Splitter>
                         <Splitter.Panel defaultSize={300} min={300} max="50%" style={{ display: "flex", justifyContent: "center", position: "relative" }}>
                             <div style={{ position: "absolute", top: 8, right: 18, zIndex: 1 }}>

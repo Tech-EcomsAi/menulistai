@@ -232,15 +232,16 @@ function ProjectsPage() {
 
     return (
         <Flex vertical gap={10}>
-            <ProjectHeader
+            {currentView == 1 && <ProjectHeader
                 projects={projects}
                 selectedProject={selectedProject}
                 currentView={currentView}
                 setSelectedProject={setSelectedProject}
                 setProjects={setProjects}
+                projectData={projectData}
                 setProjectData={setProjectData}
                 setCurrentView={setCurrentView}
-            />
+            />}
             <Flex vertical gap={30} style={{ width: '100%' }} align='center' justify='flex-start'>
 
                 {currentView == 1 && <>
@@ -277,6 +278,8 @@ function ProjectsPage() {
                 {currentView == 2 && <>
                     <Flex gap={10} vertical align='center' justify='center' style={{ width: '100%' }}>
                         <Editor
+                            currentView={currentView}
+                            setCurrentView={setCurrentView}
                             projectData={projectData}
                             onRemove={handleRemove}
                             selectedLanguages={selectedLanguages}

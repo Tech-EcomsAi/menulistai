@@ -4,7 +4,7 @@ import { EMPTY_ERROR, LOGO_SMALL } from "@constant/common";
 import { CLIENT_DASHBOARD_ROUTING, HOME_ROUTING, NAVIGARIONS_ROUTINGS } from "@constant/navigations";
 import { useAppSelector } from "@hook/useAppSelector";
 import { getDarkModeState, toggleDarkMode } from "@reduxSlices/clientThemeConfig";
-import { toggleLoader } from "@reduxSlices/loader";
+import { startLoader, stopLoader } from "@reduxSlices/loader";
 import { showErrorToast, showSuccessToast } from "@reduxSlices/toast";
 import { Button, Divider, Form, Input, Space, theme } from "antd";
 import { signIn, useSession } from "next-auth/react";
@@ -35,38 +35,28 @@ function LoginPage() {
     }
   }, [])
 
-
-  const signInWithCredentials = async (values: any) => {
-    dispatch(toggleLoader("LoginPage:signInWithCredentials"))
-    signIn('credentials', { email: values.email, password: values.password, redirect: false })
-      // getUserByCredentials(values)
-      .then((response) => {
-        if (response?.error) {
-          console.log("singin cred error", response?.error)
-          //failure
-          if (response?.error.includes(LOGIN_ERRORS.INVALID_CREAD)) {
-            dispatch(showErrorToast("Invalid credentials"))
-            setError({ id: "cread", message: "Invalid credentials" })
-          } else if (response?.error.includes(LOGIN_ERRORS.UNREGISTRED)) {
-            dispatch(showErrorToast("Email not registered"))
-            setError({ id: "cread", message: "Invalid email" })
-          } else {
-            dispatch(showErrorToast("Somthing went wrong"))
-            setError({ id: "cread", message: "Somthing went wrong, please try again !" })
-          }
-        } else {
-          //success
-          dispatch(showSuccessToast("Perfect! You're signed in successfuly."))
-          router.push(HOME_ROUTING)
-        }
-        dispatch(toggleLoader(false))
-      })
-      .catch((err) => {
-        dispatch(toggleLoader(false))
-        dispatch(showErrorToast(err.message))
-        setError(err)
+  const handleSignIn = async (values: any) => {
+    const requestId = "LoginPage:signInWithCredentials";
+    try {
+      dispatch(startLoader(requestId))
+      const response = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
       });
-  }
+
+      if (response?.error) {
+        dispatch(stopLoader(requestId))
+        dispatch(showErrorToast(response.error));
+        return;
+      }
+      dispatch(stopLoader(requestId))
+      router.push(HOME_ROUTING)
+    } catch (error) {
+      dispatch(stopLoader(requestId))
+      dispatch(showErrorToast("An error occurred during sign in"));
+    }
+  };
 
   const signInWithGoogle = () => {
     signIn('google')
@@ -86,10 +76,10 @@ function LoginPage() {
           dispatch(showSuccessToast("Perfect! You're signed in successfuly."))
           router.push(HOME_ROUTING)
         }
-        dispatch(toggleLoader(false))
+        dispatch(stopLoader("LoginPage:signInWithGoogle"))
       })
       .catch((err) => {
-        dispatch(toggleLoader(false))
+        dispatch(stopLoader("LoginPage:signInWithGoogle"))
         dispatch(showErrorToast(err.message))
         setError(err)
       });
@@ -136,7 +126,7 @@ function LoginPage() {
               <Button type="default"
                 size="large"
                 icon={<FcGoogle />}
-                onClick={() => signIn('google', { callbackUrl: `${location.origin}${CLIENT_DASHBOARD_ROUTING}` })}
+                onClick={() => dispatch(startLoader("LoginPage:signInWithGoogle")) && signIn('google', { callbackUrl: `${location.origin}${CLIENT_DASHBOARD_ROUTING}` })}
               // onClick={signInWithGoogle} 
               >
                 Sing in with Google</Button>
@@ -146,7 +136,7 @@ function LoginPage() {
               name="normal_login"
               className={`${styles.form} login-form`}
               initialValues={{}}
-              onFinish={signInWithCredentials}
+              onFinish={handleSignIn}
               onValuesChange={onValuesChange}
               validateMessages={validateMessages}
             >

@@ -2,7 +2,7 @@
 import { getPlatformSummary } from '@database/platformSummary';
 import { getAllStores } from '@database/stores';
 import { useAppDispatch } from '@hook/useAppDispatch';
-import { toggleLoader } from '@reduxSlices/loader';
+import { startLoader, stopLoader } from '@reduxSlices/loader';
 import { StoreDataType } from '@type/platform/store';
 import { TenantDataType } from '@type/platform/tenant';
 import { removeObjRef } from '@util/utils';
@@ -20,18 +20,30 @@ function StoresDashboard() {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(toggleLoader("stores-fetching"))
-        getAllStores().then((stores) => {
-            setStoresList(stores)
-            dispatch(toggleLoader(""))
-            console.log("stores", stores)
-        })
+        const fetchStores = async () => {
+            const requestId = "stores-fetching";
+            try {
+                dispatch(startLoader(requestId));
+                const stores = await getAllStores();
+                setStoresList(stores);
+                dispatch(stopLoader(requestId));
+            } catch (error) {
+                dispatch(stopLoader(requestId));
+                console.error('Error fetching stores:', error);
+            }
+        };
+        fetchStores();
 
-        getPlatformSummary().then((summary) => {
-            setPlatformSummary(summary)
-            console.log("summary", summary)
-        })
-    }, [])
+        const fetchPlatformSummary = async () => {
+            try {
+                const summary = await getPlatformSummary();
+                setPlatformSummary(summary);
+            } catch (error) {
+                console.error('Error fetching platform summary:', error);
+            }
+        };
+        fetchPlatformSummary();
+    }, [dispatch]);
 
     const columns = [
         {

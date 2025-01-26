@@ -3,7 +3,7 @@ import { DB_COLLECTIONS } from '@constant/database';
 import { getPlatformSummary } from '@database/platformSummary';
 import { getAllTenants } from '@database/tenants';
 import { useAppDispatch } from '@hook/useAppDispatch';
-import { toggleLoader } from '@reduxSlices/loader';
+import { startLoader, stopLoader } from '@reduxSlices/loader';
 import { StoreDataType } from '@type/platform/store';
 import { TenantDataType } from '@type/platform/tenant';
 import { removeObjRef } from '@util/utils';
@@ -22,14 +22,21 @@ function TenantsDashboard() {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(toggleLoader("tenants-fetching"))
-        getAllTenants().then((tenants) => {
-            setTenantsList(tenants)
-            dispatch(toggleLoader(""))
-            console.log("tenants", tenants)
-        })
+        const fetchTenants = async () => {
+            const requestId = "tenants-fetching";
+            try {
+                dispatch(startLoader(requestId));
+                const tenants = await getAllTenants();
+                setTenantsList(tenants);
+                dispatch(stopLoader(requestId));
+            } catch (error) {
+                dispatch(stopLoader(requestId));
+                console.error('Error fetching tenants:', error);
+            }
+        };
+        fetchTenants();
         getPlatformData()
-    }, [])
+    }, [dispatch]);
 
     const getPlatformData = () => {
         getPlatformSummary().then((summary) => {
