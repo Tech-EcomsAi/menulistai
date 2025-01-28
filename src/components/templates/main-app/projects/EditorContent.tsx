@@ -1,9 +1,8 @@
-import { Card, Collapse, Empty, Flex, Input, Space, Typography, theme } from "antd";
+import { Card, Collapse, Empty, Flex, Input, Space, Tag, Typography, theme } from "antd";
 import { useState } from "react";
 import { ProjectFileType } from "./type";
 
 const { Text } = Typography;
-const { Panel } = Collapse;
 
 interface EditorContentProps {
     file: ProjectFileType;
@@ -73,6 +72,44 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                 return item;
                             })
                         };
+                    } else if (id.startsWith('item-') && id.includes('-attr-')) {
+                        // Handle item attribute price updates
+                        const [_, categoryIdx, itemIdx, __, attrIdx] = id.split('-');
+                        modelResponse.data = {
+                            ...modelResponse.data,
+                            items: modelResponse.data.items.map((item: any, idx: number) => {
+                                if (idx === parseInt(itemIdx)) {
+                                    return {
+                                        ...item,
+                                        attributes: item.attributes.map((attr: any, attrId: number) => {
+                                            if (attrId === parseInt(attrIdx)) {
+                                                return {
+                                                    ...attr,
+                                                    price: newValue
+                                                };
+                                            }
+                                            return attr;
+                                        })
+                                    };
+                                }
+                                return item;
+                            })
+                        };
+                    } else if (id.startsWith('item-') && id.includes('-price')) {
+                        // Handle item price updates
+                        const [_, categoryIdx, itemIdx, __] = id.split('-');
+                        modelResponse.data = {
+                            ...modelResponse.data,
+                            items: modelResponse.data.items.map((item: any, idx: number) => {
+                                if (idx === parseInt(itemIdx)) {
+                                    return {
+                                        ...item,
+                                        price: newValue
+                                    };
+                                }
+                                return item;
+                            })
+                        };
                     } else {
                         // Handle item value updates
                         modelResponse.data = {
@@ -98,11 +135,6 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
 
         return (
             <Input
-                addonBefore={
-                    selectedLanguages.size > 1 && (
-                        <Text style={{ minWidth: 30 }}>{lang.toUpperCase()}</Text>
-                    )
-                }
                 value={isEditing ? editValues[id] : content}
                 onChange={(e) => handleUpdateValue(id, e.target.value)}
                 onBlur={() => handleBlur(id)}
@@ -111,6 +143,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                 variant={isEditing ? "outlined" : "outlined"}
                 readOnly={!isEditing}
                 style={{
+                    height: 32,
                     width: '100%',
                     cursor: isEditing ? 'text' : 'pointer'
                 }}
@@ -120,34 +153,37 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
 
     return (
         <Card
+            styles={{ body: { padding: 0 } }}
             style={{
                 width: '100%',
                 background: token.colorBgContainer
             }}
         >
             {file.modelResponse ? (
-                <Collapse defaultActiveKey={['0']} style={{ width: '100%' }}>
-                    {file.modelResponse.data.categories.map((category, categoryIdx) => {
+                <Collapse
+                    defaultActiveKey={['0']}
+                    style={{ width: '100%' }}
+                    items={file.modelResponse.data.categories.map((category, categoryIdx) => {
                         const categoryItems = file.modelResponse.data.items.filter(item => item.category === category.id);
-                        return (
-                            <Panel
-                                header={
-                                    <Space direction="vertical" style={{ width: '100%' }}>
-                                        <Text strong>Category {categoryIdx + 1}</Text>
-                                        {Array.from(selectedLanguages).map(langWithCode => {
-                                            const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
-                                            const name = category.name?.[lang] || '';
-                                            return (
-                                                <Flex key={lang} align="center" gap={8}>
-                                                    {renderEditableContent(name, `category-${categoryIdx}-${lang}`, lang)}
-                                                </Flex>
-                                            );
-                                        })}
-                                    </Space>
-                                }
-                                key={categoryIdx}
-                            >
-                                <Space direction="vertical" style={{ width: '100%', paddingLeft: 24 }}>
+                        return {
+                            key: categoryIdx,
+                            label: (
+                                <Space direction="vertical" style={{ width: '100%' }}>
+                                    <Text strong>Category {categoryIdx + 1}</Text>
+                                    {Array.from(selectedLanguages).map(langWithCode => {
+                                        const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
+                                        const name = category.name?.[lang] || '';
+                                        return (
+                                            <Flex key={lang} align="center" gap={8}>
+                                                {selectedLanguages.size > 1 && <Tag>{lang}</Tag>}
+                                                {renderEditableContent(name, `category-${categoryIdx}-${lang}`, lang)}
+                                            </Flex>
+                                        );
+                                    })}
+                                </Space>
+                            ),
+                            children: (
+                                <Space direction="vertical" style={{ width: '100%', paddingLeft: 18 }}>
                                     {categoryItems.map((item, itemIdx) => (
                                         <Card
                                             hoverable={false}
@@ -160,24 +196,47 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                 }
                                             }}
                                         >
-                                            <Space direction="vertical" style={{ width: '100%' }}>
-                                                {Array.from(selectedLanguages).map(langWithCode => {
-                                                    const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
-                                                    const name = item.name?.[lang] || '';
-                                                    return (
-                                                        <Flex key={lang} align="center" gap={8}>
-                                                            {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}
-                                                        </Flex>
-                                                    );
-                                                })}
-                                            </Space>
+                                            <Flex style={{ width: '100%' }} gap={12} justify="space-between">
+                                                <Space direction="vertical" style={{ width: '100%' }} size={4}>
+                                                    {Array.from(selectedLanguages).map(langWithCode => {
+                                                        const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
+                                                        const name = item.name?.[lang] || '';
+                                                        return (
+                                                            <Flex key={lang} align="center" gap={8}>
+                                                                {selectedLanguages.size > 1 && <Tag>{lang}</Tag>}
+                                                                <Flex gap={12} style={{ flex: 1 }} align="center">
+                                                                    <Flex flex={1}>
+                                                                        {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}
+                                                                    </Flex>
+                                                                </Flex>
+                                                            </Flex>
+                                                        );
+                                                    })}
+                                                </Space>
+                                                {item.attributes ? (
+                                                    <Space size={8} direction="vertical">
+                                                        {item.attributes.map((attr, attrIdx) => (
+                                                            <Flex key={attrIdx} align="center" gap={8} justify="flex-end">
+                                                                <Text type="secondary" style={{ fontSize: 13, minWidth: "max-content" }}>{attr.name}</Text>
+                                                                <Flex style={{ minWidth: 100, width: 100 }}>
+                                                                    {renderEditableContent(attr.price, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}`, '')}
+                                                                </Flex>
+                                                            </Flex>
+                                                        ))}
+                                                    </Space>
+                                                ) : (
+                                                    <Flex style={{ minWidth: 100, width: 100 }}>
+                                                        {renderEditableContent(item.price || '', `item-${categoryIdx}-${itemIdx}-price`, '')}
+                                                    </Flex>
+                                                )}
+                                            </Flex>
                                         </Card>
                                     ))}
                                 </Space>
-                            </Panel>
-                        );
+                            )
+                        };
                     })}
-                </Collapse>
+                />
             ) : (
                 <Empty description="No model response available" />
             )}

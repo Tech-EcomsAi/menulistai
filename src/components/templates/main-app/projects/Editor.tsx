@@ -130,7 +130,7 @@ function Editor({
                         // background: token.colorBgLayout,
                         position: 'sticky',
                         top: 0,
-                        zIndex: 9999
+                        zIndex: 11
                     }}>
                     <Flex gap={16} justify="space-between" align="center">
                         <Flex gap={8} wrap="wrap" align="center">
@@ -192,8 +192,8 @@ function Editor({
                             </Flex>
                         </Splitter.Panel>
                         <Splitter.Panel>
-                            <EditorContent 
-                                file={file} 
+                            <EditorContent
+                                file={file}
                                 setProjectData={(newData: ProjectFileType) => {
                                     setProjectData(prev => ({
                                         ...prev,
