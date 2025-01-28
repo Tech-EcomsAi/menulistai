@@ -1,6 +1,6 @@
 import { Button, Card, Empty, Flex, Image, message, Popconfirm, Splitter, Tag, theme, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { LuArrowLeft, LuEye, LuFileText, LuLayoutGrid, LuList, LuTrash } from "react-icons/lu";
+import { LuArrowLeft, LuArrowRight, LuEye, LuFileText, LuLayoutGrid, LuList, LuTrash } from "react-icons/lu";
 import EditorContent from "./EditorContent";
 import LanguageSelector from "./LanguageSelector";
 import ZoomableImage from "./ZoomableImage";
@@ -9,7 +9,8 @@ import { Project, ProjectFileType } from "./type";
 const { Text } = Typography;
 
 function Editor({
-    projectData,
+    originalProjectData,
+    setOriginalProjectData,
     onRemove,
     selectedLanguages,
     setSelectedLanguages,
@@ -18,7 +19,8 @@ function Editor({
     setCurrentView,
     currentView
 }: {
-    projectData: Project,
+    originalProjectData: Project,
+    setOriginalProjectData: any,
     onRemove: (id: string) => void,
     selectedLanguages: Set<string>,
     setSelectedLanguages: (languages: Set<string>) => void,
@@ -29,6 +31,7 @@ function Editor({
 }) {
     const { token } = theme.useToken();
     const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
+    const [projectData, setProjectData] = useState(originalProjectData);
 
     // Process languages in useEffect instead of during render
     useEffect(() => {
@@ -62,6 +65,7 @@ function Editor({
         return (
             <Card>
                 <Empty description="No images uploaded" />
+                <Button type="primary" onClick={() => setCurrentView(1)}>Upload Files</Button>
             </Card>
         );
     }
@@ -91,6 +95,11 @@ function Editor({
         }
         setSelectedLanguages(newSelected);
     };
+
+    const handleUploadAndContinue = () => {
+        setOriginalProjectData(projectData);
+        setCurrentView(3);
+    }
 
     const StatChip = ({ icon: Icon, label, count, color }: { icon: any, label: string, count: number, color: string }) => (
         <Tag
@@ -183,7 +192,16 @@ function Editor({
                             </Flex>
                         </Splitter.Panel>
                         <Splitter.Panel>
-                            <EditorContent file={file} />
+                            <EditorContent 
+                                file={file} 
+                                setProjectData={(newData: ProjectFileType) => {
+                                    setProjectData(prev => ({
+                                        ...prev,
+                                        files: prev.files.map(f => f.id === newData.id ? newData : f)
+                                    }));
+                                }}
+                                selectedLanguages={selectedLanguages}
+                            />
                         </Splitter.Panel>
                     </Splitter>
                 </Card>
@@ -202,6 +220,23 @@ function Editor({
                     }}
                 />
             )}
+            <Button
+                onClick={handleUploadAndContinue}
+                type="primary"
+                icon={<LuArrowRight />}
+                shape='round'
+                size='large'
+                style={{
+                    zIndex: 1,
+                    position: "fixed",
+                    width: "max-content",
+                    right: '50%',
+                    transform: 'translateX(50%)',
+                    bottom: 24
+                }}
+            >
+                Continue
+            </Button>
         </Flex>
     );
 }

@@ -11,6 +11,7 @@ import { DummyModelResponses } from './data';
 import Editor from './Editor';
 import { FileList } from './FileList';
 import LanguageSelector from './LanguageSelector';
+import OutputView from './OutputView';
 import { ProjectHeader } from './ProjectHeader';
 import { Project, ProjectMetadata } from './type';
 
@@ -280,7 +281,8 @@ function ProjectsPage() {
                         <Editor
                             currentView={currentView}
                             setCurrentView={setCurrentView}
-                            projectData={projectData}
+                            originalProjectData={projectData}
+                            setOriginalProjectData={setProjectData}
                             onRemove={handleRemove}
                             selectedLanguages={selectedLanguages}
                             setSelectedLanguages={setSelectedLanguages}
@@ -290,8 +292,21 @@ function ProjectsPage() {
                     </Flex>
                 </>}
 
+                {currentView == 3 && <>
+                    <Flex gap={10} vertical align='center' justify='center' style={{ width: '100%' }}>
+                        <OutputView
+                            currentView={currentView}
+                            setCurrentView={setCurrentView}
+                            projectData={projectData}
+                            selectedLanguages={selectedLanguages}
+                            setSelectedLanguages={setSelectedLanguages}
+                        />
+                    </Flex>
+                </>}
+
+
             </Flex>
-            {projectData?.files?.length > 0 && (
+            {currentView == 1 && (
                 <Button
                     onClick={handleUploadAndContinue}
                     type="primary"

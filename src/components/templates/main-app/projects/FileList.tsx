@@ -14,7 +14,6 @@ interface FileListProps {
 
 export function FileList({ files, onRemove, fileProcessingId }: FileListProps) {
 
-    console.log("files", files)
     const { token } = useToken();
     const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
