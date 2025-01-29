@@ -1,6 +1,7 @@
+import { removeObjRef } from "@util/utils";
 import { Button, Card, Empty, Flex, Image, message, Popconfirm, Splitter, Tag, theme, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { LuArrowLeft, LuArrowRight, LuEye, LuFileText, LuLayoutGrid, LuList, LuTrash } from "react-icons/lu";
+import { LuArrowLeft, LuArrowRight, LuEye, LuFileText, LuLayoutGrid, LuList, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import EditorContent from "./EditorContent";
 import LanguageSelector from "./LanguageSelector";
 import ZoomableImage from "./ZoomableImage";
@@ -31,7 +32,7 @@ function Editor({
 }) {
     const { token } = theme.useToken();
     const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
-    const [projectData, setProjectData] = useState(originalProjectData);
+    const [projectData, setProjectData] = useState(removeObjRef(originalProjectData));
 
     // Process languages in useEffect instead of during render
     useEffect(() => {
@@ -97,13 +98,17 @@ function Editor({
     };
 
     const handleUploadAndContinue = () => {
-        setOriginalProjectData(projectData);
+        setOriginalProjectData(removeObjRef(projectData));
         setCurrentView(3);
     }
 
     const handleBackClick = () => {
-        setOriginalProjectData(projectData);
+        setOriginalProjectData(removeObjRef(projectData));
         setCurrentView(1);
+    }
+
+    const handleResetClick = () => {
+        setProjectData(removeObjRef(originalProjectData));
     }
 
     const StatChip = ({ icon: Icon, label, count, color }: { icon: any, label: string, count: number, color: string }) => (
@@ -140,6 +145,16 @@ function Editor({
                     <Flex gap={16} justify="space-between" align="center">
                         <Flex gap={8} wrap="wrap" align="center">
                             <Button icon={<LuArrowLeft />} onClick={handleBackClick}>Back</Button>
+                            <Popconfirm
+                                title="Reset Changes"
+                                description="Are you sure? This action cannot be undone."
+                                okText="Reset"
+                                cancelText="Cancel"
+                                okButtonProps={{ danger: true }}
+                                onConfirm={handleResetClick}
+                            >
+                                <Button icon={<LuRefreshCcw />} danger>Reset</Button>
+                            </Popconfirm>
                             <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
                             <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
                             <StatChip icon={LuList} label="Items" count={totalItems} color={token.colorSuccess} />
