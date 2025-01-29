@@ -35,7 +35,23 @@ export const DummyModelResponses = [
                         "en": "Cheeseburger"
                     },
                     "category": 1,
-                    "price": "34"
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "name": { "en": "1 persons", "es": "1 persona" },
+                            "price": "31.95"
+                        },
+                        {
+                            "id": 2,
+                            "name": { "en": "2 persons", "es": "2 personas" },
+                            "price": "31.95"
+                        },
+                        {
+                            "id": 3,
+                            "name": { "en": "3 persons", "es": "3 personas" },
+                            "price": "31.95"
+                        }
+                    ]
                 },
                 {
                     "id": 2,
@@ -662,23 +678,7 @@ export const DummyModelResponses = [
                         "en": "Safron rice with chicken, seafood and vegetables"
                     },
                     "category": 3,
-                    "attributes": [
-                        {
-                            "id": 1,
-                            "name": { "en": "1 persons", "es": "1 persona" },
-                            "price": "31.95"
-                        },
-                        {
-                            "id": 2,
-                            "name": { "en": "2 persons", "es": "2 personas" },
-                            "price": "31.95"
-                        },
-                        {
-                            "id": 3,
-                            "name": { "en": "3 persons", "es": "3 personas" },
-                            "price": "31.95"
-                        }
-                    ]
+                    "price": "31.95"
                 },
                 {
                     "id": 52,

@@ -36,61 +36,78 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                 })
             };
         } else if (id.startsWith('item-')) {
-            // Handle item name updates
-            const [_, categoryIdx, itemIdx, lang] = id.split('-');
-            modelResponse.data = {
-                ...modelResponse.data,
-                items: modelResponse.data.items.map((item: any, idx: number) => {
-                    if (idx === parseInt(itemIdx)) {
-                        return {
-                            ...item,
-                            name: {
-                                ...item.name,
-                                [lang]: newValue
-                            }
-                        };
-                    }
-                    return item;
-                })
-            };
-        } else if (id.startsWith('item-') && id.includes('-attr-')) {
-            // Handle item attribute price updates
-            const [_, categoryIdx, itemIdx, __, attrIdx] = id.split('-');
-            modelResponse.data = {
-                ...modelResponse.data,
-                items: modelResponse.data.items.map((item: any, idx: number) => {
-                    if (idx === parseInt(itemIdx)) {
-                        return {
-                            ...item,
-                            attributes: item.attributes.map((attr: any, attrId: number) => {
-                                if (attrId === parseInt(attrIdx)) {
-                                    return {
-                                        ...attr,
-                                        price: newValue
-                                    };
+            if (id.includes('-attr-')) {
+                // Handle item attribute updates
+                const parts = id.split('-');
+                const itemIdx = parseInt(parts[2]);
+                const attrIdx = parseInt(parts[4]);
+                const isPrice = parts[5] === 'price';
+                const lang = parts[5] !== 'price' ? parts[5] : '';
+
+                modelResponse.data = {
+                    ...modelResponse.data,
+                    items: modelResponse.data.items.map((item: any, idx: number) => {
+                        if (idx === Number(itemIdx)) {
+                            return {
+                                ...item,
+                                attributes: item.attributes.map((attr: any, attrId: number) => {
+                                    if (attrId === Number(attrIdx)) {
+                                        if (isPrice) {
+                                            return {
+                                                ...attr,
+                                                price: newValue
+                                            };
+                                        } else {
+                                            return {
+                                                ...attr,
+                                                name: {
+                                                    ...attr.name,
+                                                    [lang]: newValue
+                                                }
+                                            };
+                                        }
+                                    }
+                                    return attr;
+                                })
+                            };
+                        }
+                        return item;
+                    })
+                };
+            } else if (id.includes('-price')) {
+                // Handle item price updates
+                const [_, categoryIdx, itemIdx, __] = id.split('-');
+                modelResponse.data = {
+                    ...modelResponse.data,
+                    items: modelResponse.data.items.map((item: any, idx: number) => {
+                        if (idx === Number(itemIdx)) {
+                            return {
+                                ...item,
+                                price: newValue
+                            };
+                        }
+                        return item;
+                    })
+                };
+            } else {
+                // Handle item name updates
+                const [_, categoryIdx, itemIdx, lang] = id.split('-');
+                modelResponse.data = {
+                    ...modelResponse.data,
+                    items: modelResponse.data.items.map((item: any, idx: number) => {
+                        if (idx === Number(itemIdx)) {
+                            return {
+                                ...item,
+                                name: {
+                                    ...item.name,
+                                    [lang]: newValue
                                 }
-                                return attr;
-                            })
-                        };
-                    }
-                    return item;
-                })
-            };
-        } else if (id.startsWith('item-') && id.includes('-price')) {
-            // Handle item price updates
-            const [_, categoryIdx, itemIdx, __] = id.split('-');
-            modelResponse.data = {
-                ...modelResponse.data,
-                items: modelResponse.data.items.map((item: any, idx: number) => {
-                    if (idx === parseInt(itemIdx)) {
-                        return {
-                            ...item,
-                            price: newValue
-                        };
-                    }
-                    return item;
-                })
-            };
+                            };
+                        }
+                        return item;
+                    })
+                };
+            }
         }
 
         setProjectData({
@@ -143,7 +160,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                         const name = category.name?.[lang] || '';
                                         return (
                                             <Flex key={lang} align="center" gap={8}>
-                                                {selectedLanguages.size > 1 && <Tag>{lang}</Tag>}
+                                                {selectedLanguages.size > 1 && <Tag style={{ minWidth: 50, textAlign: 'center' }}>{lang}</Tag>}
                                                 {renderEditableContent(name, `category-${categoryIdx}-${lang}`, lang)}
                                             </Flex>
                                         );
@@ -171,7 +188,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                         const name = item.name?.[lang] || '';
                                                         return (
                                                             <Flex key={lang} align="center" gap={8}>
-                                                                {selectedLanguages.size > 1 && <Tag>{lang}</Tag>}
+                                                                {selectedLanguages.size > 1 && <Tag style={{ minWidth: 50, textAlign: 'center' }}>{lang}</Tag>}
                                                                 <Flex gap={12} style={{ flex: 1 }} align="center">
                                                                     <Flex flex={1}>
                                                                         {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}
@@ -182,16 +199,40 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                     })}
                                                 </Space>
                                                 {item.attributes ? (
-                                                    <Space size={8} direction="vertical">
+                                                    <Flex vertical gap={8} style={{ width: 250, maxWidth: 250, minWidth: 250 }}>
                                                         {item.attributes.map((attr, attrIdx) => (
-                                                            <Flex key={attrIdx} align="center" gap={8} justify="flex-end">
-                                                                <Text type="secondary" style={{ fontSize: 13, minWidth: "max-content" }}>{attr.name}</Text>
-                                                                <Flex style={{ minWidth: 100, width: 100 }}>
-                                                                    {renderEditableContent(attr.price, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}`, '')}
+                                                            <Card
+                                                                key={attrIdx}
+                                                                size="small"
+                                                                bordered
+                                                                style={{ background: token.colorFillAlter }}
+                                                            >
+                                                                <Flex vertical gap={4} style={{ width: '100%' }}>
+                                                                    {Array.from(selectedLanguages).map(langWithCode => {
+                                                                        const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
+                                                                        const attrName = attr.name?.[lang] || '';
+                                                                        console.log('Attribute data:', { attr, lang, attrName });
+                                                                        return (
+                                                                            <Flex key={lang} align="center" gap={8}>
+                                                                                {selectedLanguages.size > 1 && (
+                                                                                    <Tag style={{ minWidth: 50, textAlign: 'center' }}>{lang}</Tag>
+                                                                                )}
+                                                                                <div style={{ flex: 1 }}>
+                                                                                    {renderEditableContent(attrName, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}-${lang}`, lang)}
+                                                                                </div>
+                                                                            </Flex>
+                                                                        );
+                                                                    })}
+                                                                    <Flex align="center" gap={8}>
+                                                                        <Tag style={{ minWidth: 50, textAlign: 'center' }}>Price</Tag>
+                                                                        <div style={{ flex: 1 }}>
+                                                                            {renderEditableContent(attr.price, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}-price`, '')}
+                                                                        </div>
+                                                                    </Flex>
                                                                 </Flex>
-                                                            </Flex>
+                                                            </Card>
                                                         ))}
-                                                    </Space>
+                                                    </Flex>
                                                 ) : (
                                                     <Flex style={{ minWidth: 100, width: 100 }}>
                                                         {renderEditableContent(item.price || '', `item-${categoryIdx}-${itemIdx}-price`, '')}
