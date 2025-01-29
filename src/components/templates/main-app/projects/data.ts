@@ -205,7 +205,23 @@ export const DummyModelResponses = [
                         "en": "Fresh fish cakes"
                     },
                     "category": 1,
-                    "price": "6.25"
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "name": { "en": "1 persons", "es": "1 persona" },
+                            "price": "31.95"
+                        },
+                        {
+                            "id": 2,
+                            "name": { "en": "2 persons", "es": "2 personas" },
+                            "price": "31.95"
+                        },
+                        {
+                            "id": 3,
+                            "name": { "en": "3 persons", "es": "3 personas" },
+                            "price": "31.95"
+                        }
+                    ]
                 },
                 {
                     "id": 3,
@@ -648,16 +664,19 @@ export const DummyModelResponses = [
                     "category": 3,
                     "attributes": [
                         {
-                            "name": "1 persons",
+                            "id": 1,
+                            "name": { "en": "1 persons", "es": "1 persona" },
                             "price": "31.95"
                         },
                         {
-                            "name": "2 persons",
+                            "id": 2,
+                            "name": { "en": "2 persons", "es": "2 personas" },
                             "price": "31.95"
                         },
                         {
-                            "name": "3 persons",
-                            "price": "27.95"
+                            "id": 3,
+                            "name": { "en": "3 persons", "es": "3 personas" },
+                            "price": "31.95"
                         }
                     ]
                 },
@@ -670,16 +689,19 @@ export const DummyModelResponses = [
                     "category": 3,
                     "attributes": [
                         {
-                            "name": "1 persons",
+                            "id": 1,
+                            "name": { "en": "1 persons", "es": "1 persona" },
                             "price": "31.95"
                         },
                         {
-                            "name": "2 persons",
+                            "id": 2,
+                            "name": { "en": "2 persons", "es": "2 personas" },
                             "price": "31.95"
                         },
                         {
-                            "name": "3 persons",
-                            "price": "27.95"
+                            "id": 3,
+                            "name": { "en": "3 persons", "es": "3 personas" },
+                            "price": "31.95"
                         }
                     ]
                 },
@@ -690,12 +712,7 @@ export const DummyModelResponses = [
                         "en": "Safron rice with seafood, fish and vegetables"
                     },
                     "category": 3,
-                    "attributes": [
-                        {
-                            "name": "2 persons",
-                            "price": "31.95"
-                        }
-                    ]
+                    "price": "26"
                 },
                 {
                     "id": 54,
@@ -704,12 +721,7 @@ export const DummyModelResponses = [
                         "en": "Seafood rice cooked with squid ink"
                     },
                     "category": 3,
-                    "attributes": [
-                        {
-                            "name": "2 persons",
-                            "price": "31.95"
-                        }
-                    ]
+                    "price": "26"
                 },
                 {
                     "id": 55,
@@ -718,12 +730,7 @@ export const DummyModelResponses = [
                         "en": "Vegetarian Paella with seasonal vegetables"
                     },
                     "category": 3,
-                    "attributes": [
-                        {
-                            "name": "2 persons",
-                            "price": "21.95"
-                        }
-                    ]
+                    "price": "26"
                 }
             ]
         }
@@ -925,12 +932,7 @@ export const DummyModelResponses = [
                         "ar": "شامي كباب"
                     },
                     "category": 1,
-                    "attributes": [
-                        {
-                            "name": "3pc",
-                            "price": "18"
-                        }
-                    ]
+                    "price": "26"
                 },
                 {
                     "id": 20,

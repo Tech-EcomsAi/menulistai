@@ -101,6 +101,11 @@ function Editor({
         setCurrentView(3);
     }
 
+    const handleBackClick = () => {
+        setOriginalProjectData(projectData);
+        setCurrentView(1);
+    }
+
     const StatChip = ({ icon: Icon, label, count, color }: { icon: any, label: string, count: number, color: string }) => (
         <Tag
             style={{
@@ -134,7 +139,7 @@ function Editor({
                     }}>
                     <Flex gap={16} justify="space-between" align="center">
                         <Flex gap={8} wrap="wrap" align="center">
-                            <Button icon={<LuArrowLeft />} onClick={() => setCurrentView(currentView - 1)}>Back</Button>
+                            <Button icon={<LuArrowLeft />} onClick={handleBackClick}>Back</Button>
                             <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
                             <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
                             <StatChip icon={LuList} label="Items" count={totalItems} color={token.colorSuccess} />
@@ -195,9 +200,10 @@ function Editor({
                             <EditorContent
                                 file={file}
                                 setProjectData={(newData: ProjectFileType) => {
+                                    console.log("new data", newData)
                                     setProjectData(prev => ({
                                         ...prev,
-                                        files: prev.files.map(f => f.id === newData.id ? newData : f)
+                                        files: prev.files.map(f => f.uid === newData.uid ? newData : f)
                                     }));
                                 }}
                                 selectedLanguages={selectedLanguages}

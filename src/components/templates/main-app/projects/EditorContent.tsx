@@ -12,140 +12,108 @@ interface EditorContentProps {
 
 export function EditorContent({ file, setProjectData, selectedLanguages }: EditorContentProps) {
     const { token } = theme.useToken();
-    const [editStates, setEditStates] = useState<Record<string, boolean>>({});
-    const [editValues, setEditValues] = useState<Record<string, string>>({});
-
-    const handleStartEdit = (id: string, initialValue: string) => {
-        setEditStates(prev => ({ ...prev, [id]: true }));
-        setEditValues(prev => ({ ...prev, [id]: initialValue }));
-    };
-
-    const handleBlur = (id: string) => {
-        setEditStates(prev => ({ ...prev, [id]: false }));
-        // TODO: Implement save logic here with editValues[id]
-    };
+    const [activeInput, setActiveInput] = useState<string | null>(null);
 
     const handleUpdateValue = (id: string, newValue: string) => {
-        // Update local edit values state
-        setEditValues(prev => ({ ...prev, [id]: newValue }));
+        const modelResponse = { ...file.modelResponse };
 
-        // Update project data
-        setProjectData((prevProject: any) => ({
-            ...prevProject,
-            files: prevProject.files.map((f: any) => {
-                if (f.uid === file.uid) {
-                    const modelResponse = { ...f.modelResponse };
-
-                    if (id.startsWith('category-')) {
-                        // Handle category name updates
-                        const [_, categoryIdx, lang] = id.split('-');
-                        modelResponse.data = {
-                            ...modelResponse.data,
-                            categories: modelResponse.data.categories.map((cat: any, idx: number) => {
-                                if (idx === parseInt(categoryIdx)) {
-                                    return {
-                                        ...cat,
-                                        name: {
-                                            ...cat.name,
-                                            [lang]: newValue
-                                        }
-                                    };
-                                }
-                                return cat;
-                            })
+        if (id.startsWith('category-')) {
+            // Handle category name updates
+            const [_, categoryIdx, lang] = id.split('-');
+            modelResponse.data = {
+                ...modelResponse.data,
+                categories: modelResponse.data.categories.map((cat: any, idx: number) => {
+                    if (idx === parseInt(categoryIdx)) {
+                        return {
+                            ...cat,
+                            name: {
+                                ...cat.name,
+                                [lang]: newValue
+                            }
                         };
-                    } else if (id.startsWith('item-')) {
-                        // Handle item name updates
-                        const [_, categoryIdx, itemIdx, lang] = id.split('-');
-                        modelResponse.data = {
-                            ...modelResponse.data,
-                            items: modelResponse.data.items.map((item: any, idx: number) => {
-                                if (idx === parseInt(itemIdx)) {
-                                    return {
-                                        ...item,
-                                        name: {
-                                            ...item.name,
-                                            [lang]: newValue
-                                        }
-                                    };
-                                }
-                                return item;
-                            })
+                    }
+                    return cat;
+                })
+            };
+        } else if (id.startsWith('item-')) {
+            // Handle item name updates
+            const [_, categoryIdx, itemIdx, lang] = id.split('-');
+            modelResponse.data = {
+                ...modelResponse.data,
+                items: modelResponse.data.items.map((item: any, idx: number) => {
+                    if (idx === parseInt(itemIdx)) {
+                        return {
+                            ...item,
+                            name: {
+                                ...item.name,
+                                [lang]: newValue
+                            }
                         };
-                    } else if (id.startsWith('item-') && id.includes('-attr-')) {
-                        // Handle item attribute price updates
-                        const [_, categoryIdx, itemIdx, __, attrIdx] = id.split('-');
-                        modelResponse.data = {
-                            ...modelResponse.data,
-                            items: modelResponse.data.items.map((item: any, idx: number) => {
-                                if (idx === parseInt(itemIdx)) {
+                    }
+                    return item;
+                })
+            };
+        } else if (id.startsWith('item-') && id.includes('-attr-')) {
+            // Handle item attribute price updates
+            const [_, categoryIdx, itemIdx, __, attrIdx] = id.split('-');
+            modelResponse.data = {
+                ...modelResponse.data,
+                items: modelResponse.data.items.map((item: any, idx: number) => {
+                    if (idx === parseInt(itemIdx)) {
+                        return {
+                            ...item,
+                            attributes: item.attributes.map((attr: any, attrId: number) => {
+                                if (attrId === parseInt(attrIdx)) {
                                     return {
-                                        ...item,
-                                        attributes: item.attributes.map((attr: any, attrId: number) => {
-                                            if (attrId === parseInt(attrIdx)) {
-                                                return {
-                                                    ...attr,
-                                                    price: newValue
-                                                };
-                                            }
-                                            return attr;
-                                        })
-                                    };
-                                }
-                                return item;
-                            })
-                        };
-                    } else if (id.startsWith('item-') && id.includes('-price')) {
-                        // Handle item price updates
-                        const [_, categoryIdx, itemIdx, __] = id.split('-');
-                        modelResponse.data = {
-                            ...modelResponse.data,
-                            items: modelResponse.data.items.map((item: any, idx: number) => {
-                                if (idx === parseInt(itemIdx)) {
-                                    return {
-                                        ...item,
+                                        ...attr,
                                         price: newValue
                                     };
                                 }
-                                return item;
+                                return attr;
                             })
                         };
-                    } else {
-                        // Handle item value updates
-                        modelResponse.data = {
-                            ...modelResponse.data,
-                            items: modelResponse.data.items.map((item: any) =>
-                                item.id === id ? { ...item, value: newValue } : item
-                            )
+                    }
+                    return item;
+                })
+            };
+        } else if (id.startsWith('item-') && id.includes('-price')) {
+            // Handle item price updates
+            const [_, categoryIdx, itemIdx, __] = id.split('-');
+            modelResponse.data = {
+                ...modelResponse.data,
+                items: modelResponse.data.items.map((item: any, idx: number) => {
+                    if (idx === parseInt(itemIdx)) {
+                        return {
+                            ...item,
+                            price: newValue
                         };
                     }
+                    return item;
+                })
+            };
+        }
 
-                    return {
-                        ...f,
-                        modelResponse
-                    };
-                }
-                return f;
-            })
-        }));
+        setProjectData({
+            ...file,
+            modelResponse
+        });
     };
 
     const renderEditableContent = (content: string, id: string, lang: string) => {
-        const isEditing = editStates[id] || false;
+        const isActive = activeInput === id;
 
         return (
             <Input
-                value={isEditing ? editValues[id] : content}
+                value={content}
                 onChange={(e) => handleUpdateValue(id, e.target.value)}
-                onBlur={() => handleBlur(id)}
-                onClick={() => !isEditing && handleStartEdit(id, content)}
-                autoFocus={isEditing}
-                variant={isEditing ? "outlined" : "outlined"}
-                readOnly={!isEditing}
+                onFocus={() => setActiveInput(id)}
+                onBlur={() => setActiveInput(null)}
                 style={{
                     height: 32,
                     width: '100%',
-                    cursor: isEditing ? 'text' : 'pointer'
+                    cursor: 'text',
+                    background: isActive ? token.colorBgContainer : token.colorFillAlter,
+                    borderColor: isActive ? token.colorPrimary : token.colorBorder
                 }}
             />
         );
