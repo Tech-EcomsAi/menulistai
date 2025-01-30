@@ -342,7 +342,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                     }
                                                 }}
                                             >
-                                                <Flex vertical={Boolean(item.attributes?.length)} style={{ width: '100%' }} gap={12} justify="flex-start">
+                                                <Flex vertical={Boolean(item.attributes?.length)} style={{ width: '100%' }} gap={12} justify="flex-start" align="flex-start">
                                                     <Flex justify="flex-start" align="center" gap={4}>
                                                         <Typography.Text type="secondary" style={{ minWidth: "max-content" }}>Item {itemIdx + 1}</Typography.Text>
                                                         <Button

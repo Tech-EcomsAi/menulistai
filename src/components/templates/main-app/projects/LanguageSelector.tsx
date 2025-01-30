@@ -1,5 +1,4 @@
 import { Flex, Tag, Typography, theme } from 'antd';
-import { IoCheckmarkCircle } from "react-icons/io5";
 
 const { Text } = Typography;
 
@@ -48,7 +47,7 @@ export function LanguageSelector({
                                 transition: 'all 0.3s'
                             }}
                         >
-                            {isSelected && <IoCheckmarkCircle style={{ fontSize: 16 }} />}
+                            {/* {isSelected && <IoCheckmarkCircle style={{ fontSize: 16 }} />} */}
                             {lang as string}
                         </Tag>
                     );

@@ -122,7 +122,6 @@ function Editor({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                margin: '4px'
             }}
         >
             <Icon style={{ fontSize: 14, color }} />
@@ -142,9 +141,9 @@ function Editor({
                         top: 0,
                         zIndex: 11
                     }}>
-                    <Flex gap={16} justify="space-between" align="center">
+                    <Flex gap={10} justify="space-between" align="center">
                         <Flex gap={8} wrap="wrap" align="center">
-                            <Button icon={<LuArrowLeft />} onClick={handleBackClick}>Back</Button>
+                            <Button shape="circle" icon={<LuArrowLeft />} onClick={handleBackClick} />
                             <Popconfirm
                                 title="Reset Changes"
                                 description="Are you sure? This action cannot be undone."
@@ -153,7 +152,7 @@ function Editor({
                                 okButtonProps={{ danger: true }}
                                 onConfirm={handleResetClick}
                             >
-                                <Button icon={<LuRefreshCcw />} danger>Reset</Button>
+                                <Button shape="circle" icon={<LuRefreshCcw />} danger />
                             </Popconfirm>
                             <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
                             <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
@@ -174,7 +173,8 @@ function Editor({
 
             {projectData.files.map((file: ProjectFileType, index: number) => (
                 <Card key={index} size="small" style={{ width: '100%', background: token.colorBgLayout }} styles={{ body: { paddingBottom: 0 } }}>
-                    <Splitter>
+                    <Splitter style={{ width: '100%' }}>
+                        {/* <Splitter style={{ width: '100%', maxHeight: 'calc(100vh - 80px)', height: "max-content", overflow: 'auto' }}> */}
                         <Splitter.Panel defaultSize={300} min={300} max="50%" style={{ display: "flex", justifyContent: "center", position: "relative" }}>
                             <div style={{ position: "absolute", top: 8, right: 18, zIndex: 1 }}>
                                 <Flex gap={8}>
