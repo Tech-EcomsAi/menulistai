@@ -130,7 +130,7 @@ function Editor({
     );
 
     return (
-        <Flex vertical gap={10} style={{ width: '100%' }}>
+        <Flex vertical style={{ width: '100%' }}>
             {allLanguages.size > 0 && (
                 <Card size="small"
                     styles={{ body: { padding: "4px 12px" } }}

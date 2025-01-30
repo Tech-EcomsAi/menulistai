@@ -1,6 +1,6 @@
-import { Button, Card, Collapse, Empty, Flex, Input, Popconfirm, Space, Tag, Tooltip, Typography, theme } from "antd";
+import { Button, Card, Collapse, Empty, Flex, Input, Modal, Space, Tag, Typography, theme } from "antd";
 import { useState } from "react";
-import { LuPlus, LuTrash2, LuX } from "react-icons/lu";
+import { LuPlus, LuTrash2 } from "react-icons/lu";
 import { ProjectFileType } from "./type";
 
 const { Text } = Typography;
@@ -172,41 +172,65 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
         });
     };
 
-    const handleDeleteAttribute = (categoryId: number, itemId: number, attrIdx: number) => {
-        const modelResponse = { ...file.modelResponse };
-        const item = modelResponse.data.items.find(item => item.category === categoryId && item.id === itemId);
+    const handleDeleteAttribute = (categoryId: number, itemIdx: number, attrIdx: number) => {
+        Modal.confirm({
+            title: 'Delete Attribute',
+            content: `Are you sure you want to delete Attribute ${attrIdx + 1}?`,
+            okText: 'Delete',
+            okButtonProps: { danger: true },
+            onOk: () => {
+                const modelResponse = { ...file.modelResponse };
+                const item = modelResponse.data.items.find(item => item.category === categoryId && item.id === itemIdx);
 
-        if (item?.attributes) {
-            item.attributes = item.attributes.filter((_, index) => index !== attrIdx);
-        }
+                if (item?.attributes) {
+                    item.attributes = item.attributes.filter((_, index) => index !== attrIdx);
+                }
 
-        setProjectData({
-            ...file,
-            modelResponse
-        });
-    };
-
-    const handleDeleteCategory = (categoryId: number) => {
-        const modelResponse = { ...file.modelResponse };
-        // Remove the category
-        modelResponse.data.categories = modelResponse.data.categories.filter(cat => cat.id !== categoryId);
-        // Remove all items belonging to this category
-        modelResponse.data.items = modelResponse.data.items.filter(item => item.category !== categoryId);
-
-        setProjectData({
-            ...file,
-            modelResponse
+                setProjectData({
+                    ...file,
+                    modelResponse
+                });
+            }
         });
     };
 
     const handleDeleteItem = (categoryId: number, itemIdx: number) => {
-        const modelResponse = { ...file.modelResponse };
-        modelResponse.data.items = modelResponse.data.items.filter((item, index) =>
-            !(item.category === categoryId && index === itemIdx)
-        );
-        setProjectData({
-            ...file,
-            modelResponse
+        Modal.confirm({
+            title: 'Delete Item',
+            content: `Are you sure you want to delete Item ${itemIdx + 1}?`,
+            okText: 'Delete',
+            okButtonProps: { danger: true },
+            onOk: () => {
+                const modelResponse = { ...file.modelResponse };
+                modelResponse.data.items = modelResponse.data.items.filter((item, index) =>
+                    !(item.category === categoryId && index === itemIdx)
+                );
+                setProjectData({
+                    ...file,
+                    modelResponse
+                });
+            }
+        });
+    };
+
+    const handleDeleteCategory = (categoryId: number) => {
+        Modal.confirm({
+            title: 'Delete Category',
+            content: 'Are you sure you want to delete this category and all its items?',
+            okText: 'Delete',
+            okButtonProps: { danger: true },
+            onOk: () => {
+                const modelResponse = { ...file.modelResponse };
+                // Remove the category
+                modelResponse.data.categories = modelResponse.data.categories.filter(cat => cat.id !== categoryId);
+                // Remove all items belonging to this category
+                modelResponse.data.items = modelResponse.data.items.filter(item => item.category !== categoryId);
+
+                setProjectData({
+                    ...file,
+                    modelResponse
+                });
+            }
         });
     };
 
@@ -214,11 +238,10 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
         const isActive = activeInput === id;
 
         const getPlaceholder = (id: string) => {
-            if (id.includes('category')) return `Category Name`;
-            if (id.includes('item') && id.includes('attr') && id.includes('price')) return `A. Price`;
+            if (id.includes('category')) return `Category`;
             if (id.includes('item') && id.includes('attr')) return `Attribute`;
             if (id.includes('item') && id.includes('price')) return `Price`;
-            if (id.includes('item')) return `Item Name`;
+            if (id.includes('item')) return `Item`;
             return '';
         };
 
@@ -285,23 +308,13 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                     <Space direction="vertical" style={{ width: '100%' }}>
                                         <Flex justify="flex-start" gap={4} align="center">
                                             <Text strong>Category {categoryIdx + 1}</Text>
-                                            <Tooltip title="Delete category">
-                                                <Popconfirm
-                                                    title="Delete Category"
-                                                    description="Are you sure you want to delete this category and all its items?"
-                                                    okText="Delete"
-                                                    cancelText="Cancel"
-                                                    okButtonProps={{ danger: true }}
-                                                    onConfirm={() => handleDeleteCategory(category.id)}
-                                                >
-                                                    <Button
-                                                        type="text"
-                                                        size="small"
-                                                        danger
-                                                        icon={<LuTrash2 />}
-                                                    />
-                                                </Popconfirm>
-                                            </Tooltip>
+                                            <Button
+                                                type="text"
+                                                size="small"
+                                                danger
+                                                icon={<LuTrash2 />}
+                                                onClick={() => handleDeleteCategory(category.id)}
+                                            />
                                         </Flex>
                                         {Array.from(selectedLanguages).map(langWithCode => {
                                             const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
@@ -319,111 +332,110 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                     <Space direction="vertical" style={{ width: '100%', paddingLeft: 18 }}>
                                         {categoryItems.map((item, itemIdx) => (
                                             <Card
-                                                size="small"
-                                                bordered
                                                 hoverable={false}
+                                                bordered={selectedLanguages.size > 1}
                                                 key={itemIdx}
-                                                style={{ width: '100%', boxShadow: "", background: token.colorFillAlter }}
+                                                style={{ width: '100%', boxShadow: "" }}
+                                                styles={{
+                                                    body: {
+                                                        padding: selectedLanguages.size > 1 ? token.paddingSM : 0
+                                                    }
+                                                }}
                                             >
                                                 <Flex vertical={Boolean(item.attributes?.length)} style={{ width: '100%' }} gap={12} justify="flex-start" align="flex-start">
-                                                    <Flex justify="flex-start" align="flex-start" gap={4}>
+                                                    <Flex justify="flex-start" align="center" gap={4}>
                                                         <Typography.Text type="secondary" style={{ minWidth: "max-content" }}>Item {itemIdx + 1}</Typography.Text>
-                                                        <Tooltip title="Delete item">
-                                                            <Popconfirm
-                                                                title="Delete Item"
-                                                                description={`Are you sure you want to delete Item ${itemIdx + 1}?`}
-                                                                okText="Delete"
-                                                                cancelText="Cancel"
-                                                                okButtonProps={{ danger: true }}
-                                                                onConfirm={() => handleDeleteItem(category.id, itemIdx)}
-                                                            >
-                                                                <Button
-                                                                    type="text"
-                                                                    size="small"
-                                                                    danger
-                                                                    icon={<LuTrash2 />}
-                                                                />
-                                                            </Popconfirm>
-                                                        </Tooltip>
+                                                        <Button
+                                                            type="text"
+                                                            size="small"
+                                                            danger
+                                                            icon={<LuTrash2 />}
+                                                            onClick={() => handleDeleteItem(category.id, itemIdx)}
+                                                        />
                                                     </Flex>
                                                     <Space direction="vertical" style={{ width: '100%' }} size={4}>
                                                         {Array.from(selectedLanguages).map(langWithCode => {
                                                             const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
                                                             const name = item.name?.[lang] || '';
-                                                            return Boolean(item.attributes?.length) ? (
-                                                                <Card
-                                                                    key={langWithCode}
-                                                                    size="small"
-                                                                    bordered
-                                                                    style={{ background: token.colorFillAlter }}
-                                                                >
-                                                                    <Flex key={lang} align="flex-start" gap={8}>
-                                                                        {selectedLanguages.size > 1 && <Tag style={{ minWidth: 50, textAlign: 'center' }}>{lang}</Tag>}
-                                                                        <Flex gap={12} style={{ flex: 1 }} align="flex-start" justify="space-between">
-                                                                            <Flex flex={1} style={{ width: "100%" }}>
-                                                                                {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}
-                                                                            </Flex>
-                                                                            <Flex vertical gap={4}>
-                                                                                <Flex gap={8} vertical style={{ width: "auto", maxWidth: "max-content" }}>
-                                                                                    {item.attributes.map((attr, attrIdx) => (
-                                                                                        <Flex key={attrIdx} gap={4} style={{ width: '100%' }}>
-                                                                                            <div style={{ flex: 1, width: 100, maxWidth: 100, minWidth: 100 }}>
-                                                                                                {renderEditableContent(attr.name?.[lang] || '', `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}-${lang}`, lang)}
-                                                                                            </div>
-                                                                                            <Flex align="center" gap={4}>
-                                                                                                <div style={{ flex: 1, width: 80, maxWidth: 80, minWidth: 80 }}>
-                                                                                                    {renderEditableContent(attr.price, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}-price`, '')}
-                                                                                                </div>
-                                                                                                <Tooltip title="Delete attribute">
-                                                                                                    <Popconfirm
-                                                                                                        title="Delete Attribute"
-                                                                                                        description={`Are you sure you want to delete Attribute ${attrIdx + 1}?`}
-                                                                                                        okText="Delete"
-                                                                                                        cancelText="Cancel"
-                                                                                                        okButtonProps={{ danger: true }}
-                                                                                                        onConfirm={() => handleDeleteAttribute(category.id, item.id, attrIdx)}
-                                                                                                    >
-                                                                                                        <Button
-                                                                                                            type="text"
-                                                                                                            size="small"
-                                                                                                            danger
-                                                                                                            icon={<LuX />}
-                                                                                                        />
-                                                                                                    </Popconfirm>
-                                                                                                </Tooltip>
-                                                                                            </Flex>
-                                                                                        </Flex>
-                                                                                    ))}
-                                                                                </Flex>
-                                                                            </Flex>
-                                                                        </Flex>
-                                                                    </Flex>
-                                                                </Card>
-                                                            ) : (
-                                                                <Flex key={langWithCode} align="flex-start" gap={8}>
+                                                            return (
+                                                                <Flex key={lang} align="center" gap={8}>
                                                                     {selectedLanguages.size > 1 && <Tag style={{ minWidth: 50, textAlign: 'center' }}>{lang}</Tag>}
-                                                                    <Flex gap={12} style={{ flex: 1 }} align="flex-start" justify="space-between">
-                                                                        <Flex flex={1} style={{ width: "100%" }}>
+                                                                    <Flex gap={12} style={{ flex: 1 }} align="center">
+                                                                        <Flex flex={1}>
                                                                             {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}
-                                                                        </Flex>
-                                                                        <Flex style={{ width: 80 }}>
-                                                                            {renderEditableContent(item.price || '', `item-${categoryIdx}-${itemIdx}-price`, '')}
                                                                         </Flex>
                                                                     </Flex>
                                                                 </Flex>
                                                             );
                                                         })}
                                                     </Space>
-                                                    <Flex justify="flex-end" style={{ width: 'auto', maxWidth: 'max-content', minWidth: Boolean(item.attributes?.length) ? "100%" : 'min-content' }}>
-                                                        <Button
-                                                            block
-                                                            type="dashed"
-                                                            icon={<LuPlus />}
-                                                            onClick={() => handleAddAttribute(category.id, item.id)}
-                                                            style={{ width: "max-content", height: 'auto', minHeight: 32 }}
-                                                        > Attribute
-                                                        </Button>
-                                                    </Flex>
+                                                    {Boolean(item.attributes?.length) ? (
+                                                        <Flex gap={8} wrap style={item.attributes.length > 1 ? { width: "auto", maxWidth: "max-content", minWidth: 250 } : { width: 250, maxWidth: 250, minWidth: 250 }}>
+                                                            {item.attributes.map((attr, attrIdx) => (
+                                                                <Card
+                                                                    key={attrIdx}
+                                                                    size="small"
+                                                                    bordered
+                                                                    style={{ background: token.colorFillAlter }}
+                                                                >
+                                                                    <Flex vertical={selectedLanguages.size > 1} gap={4} style={{ width: '100%' }}>
+                                                                        <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
+                                                                            <Typography.Text type="secondary" style={{ minWidth: "max-content" }}>Attribute {attrIdx + 1}</Typography.Text>
+                                                                            <Button
+                                                                                type="text"
+                                                                                size="small"
+                                                                                danger
+                                                                                icon={<LuTrash2 />}
+                                                                                onClick={() => handleDeleteAttribute(category.id, item.id, attrIdx)}
+                                                                            />
+                                                                        </Flex>
+                                                                        {Array.from(selectedLanguages).map(langWithCode => {
+                                                                            const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
+                                                                            const attrName = attr.name?.[lang] || '';
+                                                                            return (
+                                                                                <Flex key={lang} align="center" gap={8}>
+                                                                                    {selectedLanguages.size > 1 && (
+                                                                                        <Tag style={{ minWidth: 50, textAlign: 'center' }}>{lang}</Tag>
+                                                                                    )}
+                                                                                    <div style={{ flex: 1, width: 150, maxWidth: 150, minWidth: 150 }}>
+                                                                                        {renderEditableContent(attrName, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}-${lang}`, lang)}
+                                                                                    </div>
+                                                                                </Flex>
+                                                                            );
+                                                                        })}
+                                                                        <Flex align="center" gap={8}>
+                                                                            {selectedLanguages.size > 1 && <Tag style={{ minWidth: 50, textAlign: 'center' }}>Price</Tag>}
+                                                                            <div style={{ flex: 1, width: 150, maxWidth: 150, minWidth: 150 }}>
+                                                                                {renderEditableContent(attr.price, `item-${categoryIdx}-${itemIdx}-attr-${attrIdx}-price`, '')}
+                                                                            </div>
+                                                                        </Flex>
+                                                                    </Flex>
+                                                                </Card>
+                                                            ))}
+                                                            <Button
+                                                                type="dashed"
+                                                                icon={<LuPlus />}
+                                                                onClick={() => handleAddAttribute(category.id, item.id)}
+                                                                style={{ width: "max-content", height: 'auto', minHeight: 32 }}
+                                                            >
+                                                                Add Attribute
+                                                            </Button>
+                                                        </Flex>
+                                                    ) : (
+                                                        <Flex style={{ width: '100%' }} gap={8}>
+                                                            <Flex style={{ minWidth: 100, width: 100 }}>
+                                                                {renderEditableContent(item.price || '', `item-${categoryIdx}-${itemIdx}-price`, '')}
+                                                            </Flex>
+                                                            <Button
+                                                                type="dashed"
+                                                                icon={<LuPlus />}
+                                                                onClick={() => handleAddAttribute(category.id, item.id)}
+                                                                style={{ width: "max-content", height: 'auto', minHeight: 32 }}
+                                                            >
+                                                                Add Attribute
+                                                            </Button>
+                                                        </Flex>
+                                                    )}
                                                 </Flex>
                                             </Card>
                                         ))}

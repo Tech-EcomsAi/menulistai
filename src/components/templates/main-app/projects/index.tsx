@@ -30,7 +30,7 @@ function ProjectsPage() {
     //1: File Upload view
     //2: Response editor view
     //3: Catalogue view
-    const [allLanguages, setAllLanguages] = useState<Set<string>>(new Set(['English (en)', 'Spanish (es)', 'French (fr)', 'German (de)', 'Italian (it)']));
+    const [allLanguages, setAllLanguages] = useState<Set<string>>(new Set(['English (en)', 'Spanish (es)', 'French (fr)']));
     const [selectedLanguages, setSelectedLanguages] = useState<Set<string>>(new Set(['English (en)']));
 
     const handleLanguageToggle = (language: string) => {
