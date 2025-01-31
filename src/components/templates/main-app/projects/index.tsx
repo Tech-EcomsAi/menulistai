@@ -299,7 +299,6 @@ function ProjectsPage() {
                             setCurrentView={setCurrentView}
                             projectData={projectData}
                             selectedLanguages={selectedLanguages}
-                            setSelectedLanguages={setSelectedLanguages}
                         />
                     </Flex>
                 </>}
