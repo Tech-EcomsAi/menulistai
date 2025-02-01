@@ -1,7 +1,7 @@
 import { LOGO_SMALL } from "@constant/common";
 import { Button, Card, Flex, Select, theme, Typography } from "antd";
 import { useState } from "react";
-import { LuArrowLeft, LuEye, LuMonitor, LuSmartphone } from "react-icons/lu";
+import { LuArrowLeft, LuEye, LuMonitor, LuShare, LuSmartphone } from "react-icons/lu";
 import { Project } from "./type";
 
 interface OutputViewProps {
@@ -11,7 +11,7 @@ interface OutputViewProps {
     selectedLanguages: Set<string>;
 }
 
-function OutputView({
+function B2CView({
     currentView,
     setCurrentView,
     projectData,
@@ -92,6 +92,9 @@ function OutputView({
                     <Flex gap={8} wrap="wrap" align="center">
                         <Button icon={<LuEye />}>Preview</Button>
                     </Flex>
+                    <Flex gap={8} wrap="wrap" align="center">
+                        <Button icon={<LuShare />}>Share</Button>
+                    </Flex>
                 </Flex>
             </Card>
             <div style={{
@@ -168,5 +171,4 @@ function OutputView({
         </Flex>
     );
 }
-
-export default OutputView;
+export default B2CView

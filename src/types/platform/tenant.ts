@@ -9,6 +9,8 @@ export type TenantDataType = {
     deleted: boolean;
     verified?: boolean;
 
+    businessEntityType?: string;//B2B , B2C
+
     name: string;
     email: string;
     countryCode?: string;

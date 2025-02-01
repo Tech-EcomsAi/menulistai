@@ -1,17 +1,19 @@
 'use client';
 
 import { getProjectData, getProjects } from '@database/projects';
+import { PlatformGlobalDataContext, PlatformGlobalDataProviderType } from '@providers/platformProviders/platformGlobalDataProvider';
 import { getBase64, removeObjRef } from '@util/utils';
 import { Button, Empty, Flex, Typography, Upload, message, theme } from 'antd';
 import type { UploadFileStatus, UploadProps } from 'antd/es/upload/interface';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { LuArrowRight, LuUpload } from 'react-icons/lu';
 import { TbUpload } from 'react-icons/tb';
+import B2BView from './b2bView';
+import B2CView from './b2cView';
 import { DummyModelResponses } from './data';
 import Editor from './Editor';
 import { FileList } from './FileList';
 import LanguageSelector from './LanguageSelector';
-import OutputView from './OutputView';
 import { ProjectHeader } from './ProjectHeader';
 import { Project, ProjectMetadata } from './type';
 
@@ -27,6 +29,8 @@ function ProjectsPage() {
     const [loading, setLoading] = useState(true);
     const [fileProcessingId, setFileProcessingId] = useState(null)
     const [currentView, setCurrentView] = useState(1);
+    const { tenantDetails } = useContext<PlatformGlobalDataProviderType>(PlatformGlobalDataContext)
+
     //1: File Upload view
     //2: Response editor view
     //3: Catalogue view
@@ -294,12 +298,17 @@ function ProjectsPage() {
 
                 {currentView == 3 && <>
                     <Flex gap={10} vertical align='center' justify='center' style={{ width: '100%' }}>
-                        <OutputView
+                        {tenantDetails?.businessEntityType == 'B2C' ? <B2CView
                             currentView={currentView}
                             setCurrentView={setCurrentView}
                             projectData={projectData}
                             selectedLanguages={selectedLanguages}
-                        />
+                        /> : <B2BView
+                            currentView={currentView}
+                            setCurrentView={setCurrentView}
+                            projectData={projectData}
+                            selectedLanguages={selectedLanguages}
+                        />}
                     </Flex>
                 </>}
 
