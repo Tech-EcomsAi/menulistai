@@ -32,6 +32,10 @@ const antdComponentTheme = (token) => {
             trackHeight: 30,
             trackMinWidth: 60,
             trackPadding: 5
+        },
+        Splitter: {
+            splitBarSize: 4,
+            splitBarDraggableSize: 80,
         }
     }
 }

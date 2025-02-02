@@ -1,11 +1,11 @@
-import { Flex, Tag, Typography, theme } from 'antd';
+import { Flex, Tag, Typography, message, theme } from 'antd';
 
 const { Text } = Typography;
 
 interface LanguageSelectorProps {
-    allLanguages: Set<string>;
-    selectedLanguages: Set<string>;
-    onLanguageToggle: (language: string) => void;
+    allLanguages: Set<string> | string[] | any;
+    selectedLanguages: Set<string> | string[] | any;
+    onLanguageToggle: (updatedLanguages: Set<string>) => void;
     title?: string;
     description?: string;
     style?: React.CSSProperties;
@@ -25,25 +25,47 @@ export function LanguageSelector({
         <Flex vertical style={{ ...style }}>
             {title && <Text strong>{title}</Text>}
             {description && <Text type="secondary" style={{ marginBottom: 8 }}>{description}</Text>}
-            <Flex gap={8} wrap="wrap">
-                {Array.from(allLanguages).map((lang, idx) => {
-                    const isSelected = selectedLanguages.has(lang as string);
+            <Flex gap={6} wrap="wrap">
+                {(Array.isArray(allLanguages) ? allLanguages : Array.from(allLanguages || [])).map((lang, idx) => {
+                    const isSelected = selectedLanguages instanceof Set ?
+                        selectedLanguages.has(lang) :
+                        Array.isArray(selectedLanguages) ?
+                            selectedLanguages.includes(lang) :
+                            selectedLanguages?.[lang];
                     return (
                         <Tag
                             key={idx}
-                            onClick={() => onLanguageToggle(lang as string)}
+                            onClick={() => {
+                                const currentSelected = selectedLanguages instanceof Set ?
+                                    selectedLanguages :
+                                    Array.isArray(selectedLanguages) ?
+                                        new Set(selectedLanguages) :
+                                        new Set(Object.keys(selectedLanguages || {}));
+                                const newSelected = new Set(currentSelected);
+                                if (currentSelected.has(lang)) {
+                                    // Prevent deselecting the last language
+                                    if (selectedLanguages.size <= 1) {
+                                        message.warning('At least one language must remain selected');
+                                        return;
+                                    }
+                                    newSelected.delete(lang);
+                                } else {
+                                    newSelected.add(lang);
+                                }
+                                onLanguageToggle(newSelected);
+                            }}
                             style={{
                                 padding: '6px 12px',
                                 borderRadius: '16px',
                                 fontSize: 12,
                                 cursor: 'pointer',
                                 background: isSelected ? token.colorPrimaryBg : token.colorBgContainer,
-                                border: `1px solid ${isSelected ? token.colorPrimary : token.colorBorder}`,
+                                border: `1px solid ${isSelected ? token.colorPrimaryBorder : token.colorBorder}`,
                                 color: isSelected ? token.colorPrimary : token.colorText,
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 4,
-                                margin: '4px',
+                                margin: '0px',
                                 transition: 'all 0.3s'
                             }}
                         >

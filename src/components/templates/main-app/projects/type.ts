@@ -9,6 +9,7 @@ export interface ProjectMetadata {
 export interface Project {
     projectId?: string;
     files?: ProjectFileType[];
+    languages?: Set<string>;
 }
 
 export interface ProjectFileType {

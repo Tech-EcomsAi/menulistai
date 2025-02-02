@@ -464,11 +464,31 @@ export const uid = () => String(Date.now().toString(32) + Math.random().toString
 export const isContainerElement = (config) => Boolean(config.sectionId) ? true : false;
 
 export const removeObjRef = (obj) => {
-  // return deepClone(obj);
-  // return structuredClone(obj);
-  // return removeReferencesManually(obj);
-  // return Object.assign({}, obj)
-  return JSON.parse(JSON.stringify(obj || {}));
+  if (obj === null || obj === undefined) return {};
+  
+  // Handle Set objects
+  if (obj instanceof Set) {
+    return new Set(Array.from(obj));
+  }
+  
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map(item => removeObjRef(item));
+  }
+  
+  // Handle objects
+  if (typeof obj === 'object') {
+    const newObj = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        newObj[key] = removeObjRef(obj[key]);
+      }
+    }
+    return newObj;
+  }
+  
+  // Return primitive values as is
+  return obj;
 }
 
 function removeReferencesManually(obj) {

@@ -160,7 +160,7 @@ export function ZoomableImage({ src, alt, style }: ZoomableImageProps) {
                         padding: '4px 8px',
                         borderRadius: 8,
                         boxShadow: token.boxShadowSecondary,
-                        zIndex: 1000,
+                        zIndex: 9,
                         opacity: 0.9,
                         backdropFilter: 'blur(8px)',
                         transition: 'opacity 0.3s ease'

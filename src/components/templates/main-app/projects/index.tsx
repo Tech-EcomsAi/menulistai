@@ -35,21 +35,10 @@ function ProjectsPage() {
     //2: Response editor view
     //3: Catalogue view
     const [allLanguages, setAllLanguages] = useState<Set<string>>(new Set(['English (en)', 'Spanish (es)', 'French (fr)']));
-    const [selectedLanguages, setSelectedLanguages] = useState<Set<string>>(new Set(['English (en)']));
 
-    const handleLanguageToggle = (language: string) => {
-        const newSelected = new Set(selectedLanguages);
-        if (selectedLanguages.has(language)) {
-            // Prevent deselecting the last language
-            if (selectedLanguages.size <= 1) {
-                message.warning('At least one language must remain selected');
-                return;
-            }
-            newSelected.delete(language);
-        } else {
-            newSelected.add(language);
-        }
-        setSelectedLanguages(newSelected);
+    const handleLanguageToggle = (newLanguages: Set<string>) => {
+        if (!projectData) return;
+        setProjectData({ ...projectData, languages: newLanguages });
     };
 
     useEffect(() => {
@@ -80,6 +69,16 @@ function ProjectsPage() {
     const fetchProjectData = async (projectId: string) => {
         try {
             const projectData = await getProjectData(projectId);
+            // Check if the project already has defined languages
+            if (Boolean(projectData?.languages?.size)) {
+                // If languages exist, use them to set the available languages
+                setAllLanguages(new Set(projectData.languages));
+            } else {
+                // If no languages are defined, set English as the default project language
+                projectData.languages = new Set(['English (en)']);
+                // Initialize the language selector with default supported languages
+                setAllLanguages(new Set(['English (en)', 'Spanish (es)', 'French (fr)']));
+            }
             setProjectData(projectData);
         } catch (error) {
             console.error('Error fetching project data:', error);
@@ -171,6 +170,52 @@ function ProjectsPage() {
         }
     };
 
+    const validateSelectedFile = async (file: any) => {
+        const isValidType = ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type);
+
+        if (!isValidType) {
+            message.error(`${file.name} is not a valid file type`);
+            return Upload.LIST_IGNORE;
+        }
+
+        // Check for duplicate files
+        const isDuplicate = projectData?.files?.some(
+            existingFile =>
+                existingFile.name === file.name &&
+                existingFile.size === file.size
+        );
+
+        if (isDuplicate) {
+            message.error(`${file.name} has already been uploaded`);
+            return Upload.LIST_IGNORE;
+        }
+
+        return false;
+    }
+
+    const onSelectFile = async (info: any) => {
+        const newFileList = [...info.fileList];
+
+        // Generate preview URLs for new files
+        await Promise.all(
+            newFileList.map(async (file) => {
+                if (!file.url && !file.preview && file.originFileObj && file.type?.startsWith('image/')) {
+                    file.preview = await getBase64(file.originFileObj);
+                }
+            })
+        );
+
+        const projectDataCopy: Project = removeObjRef(projectData)
+        projectDataCopy.files = newFileList.map((file) => ({
+            uid: file.uid,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            url: file.preview || file.url
+        }));
+        setProjectData(projectDataCopy);
+    }
+
     const uploadProps: UploadProps = {
         name: 'file',
         multiple: true,
@@ -184,50 +229,8 @@ function ProjectsPage() {
             url: file.url,
         })),
         accept: '.jpg,.jpeg,.png,.pdf',
-        beforeUpload: (file) => {
-            const isValidType = ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type);
-
-            if (!isValidType) {
-                message.error(`${file.name} is not a valid file type`);
-                return Upload.LIST_IGNORE;
-            }
-
-            // Check for duplicate files
-            const isDuplicate = projectData?.files?.some(
-                existingFile =>
-                    existingFile.name === file.name &&
-                    existingFile.size === file.size
-            );
-
-            if (isDuplicate) {
-                message.error(`${file.name} has already been uploaded`);
-                return Upload.LIST_IGNORE;
-            }
-
-            return false;
-        },
-        onChange: async (info) => {
-            const newFileList = [...info.fileList];
-
-            // Generate preview URLs for new files
-            await Promise.all(
-                newFileList.map(async (file) => {
-                    if (!file.url && !file.preview && file.originFileObj && file.type?.startsWith('image/')) {
-                        file.preview = await getBase64(file.originFileObj);
-                    }
-                })
-            );
-
-            const projectDataCopy: Project = removeObjRef(projectData)
-            projectDataCopy.files = newFileList.map((file) => ({
-                uid: file.uid,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                url: file.preview || file.url
-            }));
-            setProjectData(projectDataCopy);
-        },
+        beforeUpload: validateSelectedFile,
+        onChange: onSelectFile,
         itemRender: (file, fileid) => null
     };
 
@@ -269,7 +272,7 @@ function ProjectsPage() {
                             // title="Select Target Languages"
                             description="Choose the languages you want to extract menu items in"
                             allLanguages={allLanguages}
-                            selectedLanguages={selectedLanguages}
+                            selectedLanguages={projectData?.languages}
                             onLanguageToggle={handleLanguageToggle}
                         />
                         {projectData?.files?.length > 0 && (<FileList
@@ -283,13 +286,10 @@ function ProjectsPage() {
                 {currentView == 2 && <>
                     <Flex gap={10} vertical align='center' justify='center' style={{ width: '100%' }}>
                         <Editor
-                            currentView={currentView}
                             setCurrentView={setCurrentView}
                             originalProjectData={projectData}
                             setOriginalProjectData={setProjectData}
                             onRemove={handleRemove}
-                            selectedLanguages={selectedLanguages}
-                            setSelectedLanguages={setSelectedLanguages}
                             allLanguages={allLanguages}
                             setAllLanguages={setAllLanguages}
                         />
@@ -298,17 +298,17 @@ function ProjectsPage() {
 
                 {currentView == 3 && <>
                     <Flex gap={10} vertical align='center' justify='center' style={{ width: '100%' }}>
-                        {tenantDetails?.businessEntityType == 'B2C' ? <B2CView
-                            currentView={currentView}
-                            setCurrentView={setCurrentView}
-                            projectData={projectData}
-                            selectedLanguages={selectedLanguages}
-                        /> : <B2BView
-                            currentView={currentView}
-                            setCurrentView={setCurrentView}
-                            projectData={projectData}
-                            selectedLanguages={selectedLanguages}
-                        />}
+                        {tenantDetails?.businessEntityType == 'B2C' ?
+                            <B2CView
+                                currentView={currentView}
+                                setCurrentView={setCurrentView}
+                                projectData={projectData}
+                            /> :
+                            <B2BView
+                                currentView={currentView}
+                                setCurrentView={setCurrentView}
+                                projectData={projectData}
+                            />}
                     </Flex>
                 </>}
 

@@ -1,5 +1,5 @@
 import { removeObjRef } from "@util/utils";
-import { Button, Card, Empty, Flex, Image, message, Popconfirm, Splitter, Tag, theme, Typography } from "antd";
+import { Button, Card, Empty, Flex, Image, Popconfirm, Splitter, Tag, theme, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { LuArrowLeft, LuArrowRight, LuEye, LuFileText, LuLayoutGrid, LuList, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import EditorContent from "./EditorContent";
@@ -13,22 +13,16 @@ function Editor({
     originalProjectData,
     setOriginalProjectData,
     onRemove,
-    selectedLanguages,
-    setSelectedLanguages,
     allLanguages,
     setAllLanguages,
-    setCurrentView,
-    currentView
+    setCurrentView
 }: {
     originalProjectData: Project,
     setOriginalProjectData: any,
     onRemove: (id: string) => void,
-    selectedLanguages: Set<string>,
-    setSelectedLanguages: (languages: Set<string>) => void,
     allLanguages: Set<string>,
     setAllLanguages: (languages: Set<string>) => void,
-    setCurrentView: (view: number) => void,
-    currentView: number
+    setCurrentView: (view: number) => void
 }) {
     const { token } = theme.useToken();
     const [previewFile, setPreviewFile] = useState<ProjectFileType | null>(null);
@@ -40,7 +34,7 @@ function Editor({
 
         let hasNewLanguages = false;
         const newAllLanguages = new Set(allLanguages);
-        const newSelectedLanguages = new Set(selectedLanguages);
+        const newSelectedLanguages = new Set(Array.from(projectData.languages || []));
 
         projectData.files.forEach(file => {
             if (file.modelResponse?.data) {
@@ -58,9 +52,9 @@ function Editor({
 
         if (hasNewLanguages) {
             setAllLanguages(newAllLanguages);
-            setSelectedLanguages(newSelectedLanguages);
+            setProjectData({ ...projectData, languages: newSelectedLanguages });
         }
-    }, [projectData.files, allLanguages, selectedLanguages, setAllLanguages, setSelectedLanguages]);
+    }, [projectData.files, allLanguages, projectData.languages, setAllLanguages, setProjectData]);
 
     if (!projectData.files || projectData.files.length === 0) {
         return (
@@ -82,19 +76,8 @@ function Editor({
         }
     });
 
-    const handleLanguageToggle = (language: string) => {
-        const newSelected = new Set(selectedLanguages);
-        if (selectedLanguages.has(language)) {
-            // Prevent deselecting the last language
-            if (selectedLanguages.size <= 1) {
-                message.warning('At least one language must remain selected');
-                return;
-            }
-            newSelected.delete(language);
-        } else {
-            newSelected.add(language);
-        }
-        setSelectedLanguages(newSelected);
+    const handleLanguageToggle = (newLanguages: Set<string>) => {
+        setProjectData({ ...projectData, languages: newLanguages });
     };
 
     const handleUploadAndContinue = () => {
@@ -114,7 +97,7 @@ function Editor({
     const StatChip = ({ icon: Icon, label, count, color }: { icon: any, label: string, count: number, color: string }) => (
         <Tag
             style={{
-                padding: '6px 12px',
+                padding: '5px 12px',
                 borderRadius: '16px',
                 fontSize: 12,
                 background: token.colorBgContainer,
@@ -122,6 +105,8 @@ function Editor({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
+                margin: '0px',
+                transition: 'all 0.3s'
             }}
         >
             <Icon style={{ fontSize: 14, color }} />
@@ -131,102 +116,107 @@ function Editor({
 
     return (
         <Flex vertical style={{ width: '100%' }}>
-            {allLanguages.size > 0 && (
-                <Card size="small"
-                    styles={{ body: { padding: "4px 12px" } }}
-                    style={{
-                        width: '100%',
-                        // background: token.colorBgLayout,
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 11
-                    }}>
-                    <Flex gap={10} justify="space-between" align="center">
-                        <Flex gap={8} wrap="wrap" align="center">
-                            <Button shape="circle" icon={<LuArrowLeft />} onClick={handleBackClick} />
-                            <Popconfirm
-                                title="Reset Changes"
-                                description="Are you sure? This action cannot be undone."
-                                okText="Reset"
-                                cancelText="Cancel"
-                                okButtonProps={{ danger: true }}
-                                onConfirm={handleResetClick}
-                            >
-                                <Button shape="circle" icon={<LuRefreshCcw />} danger />
-                            </Popconfirm>
-                            <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
-                            <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
-                            <StatChip icon={LuList} label="Items" count={totalItems} color={token.colorSuccess} />
-                        </Flex>
 
-                        <Flex gap={8} wrap="wrap">
-                            <LanguageSelector
-                                allLanguages={allLanguages}
-                                selectedLanguages={selectedLanguages}
-                                onLanguageToggle={handleLanguageToggle}
-                                style={{ marginTop: 0 }}
-                            />
-                        </Flex>
+            <Card size="small" styles={{ body: { padding: "0px" } }}>
+
+                <Flex gap={10} style={{
+                    width: '100%',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 11,
+                    background: token.colorBgBase,
+                    padding: '10px'
+                }}
+                    justify="space-between"
+                    align="center"
+                >
+
+                    <Flex gap={8} wrap="wrap" align="center">
+                        <Button shape="circle" icon={<LuArrowLeft />} onClick={handleBackClick} />
+                        <Popconfirm
+                            title="Reset Changes"
+                            description="Are you sure? This action cannot be undone."
+                            okText="Reset"
+                            cancelText="Cancel"
+                            okButtonProps={{ danger: true }}
+                            onConfirm={handleResetClick}
+                        >
+                            <Button shape="circle" icon={<LuRefreshCcw />} danger />
+                        </Popconfirm>
+                        <LanguageSelector
+                            allLanguages={allLanguages}
+                            selectedLanguages={projectData.languages}
+                            onLanguageToggle={(updatedLanguages: Set<string>) => setProjectData({ ...projectData, languages: updatedLanguages })}
+                            style={{ marginTop: 0 }}
+                        />
                     </Flex>
-                </Card>
-            )}
 
-            {projectData.files.map((file: ProjectFileType, index: number) => (
-                <Card key={index} size="small" style={{ width: '100%', background: token.colorBgLayout }} styles={{ body: { paddingBottom: 0 } }}>
-                    <Splitter style={{ width: '100%' }}>
-                        {/* <Splitter style={{ width: '100%', maxHeight: 'calc(100vh - 80px)', height: "max-content", overflow: 'auto' }}> */}
-                        <Splitter.Panel defaultSize={300} min={300} max="50%" style={{ display: "flex", justifyContent: "center", position: "relative" }}>
-                            <div style={{ position: "absolute", top: 8, right: 18, zIndex: 1 }}>
-                                <Flex gap={8}>
-                                    <Button
-                                        icon={<LuEye style={{ fontSize: 16 }} />}
-                                        onClick={() => setPreviewFile(file)}
-                                        shape="circle"
-                                    />
-                                    <Popconfirm
-                                        title="Delete processed image"
-                                        description="This image has already been processed and tokens have been used. Are you sure you want to delete it?"
-                                        okText="Yes, delete"
-                                        cancelText="No, keep it"
-                                        okButtonProps={{ danger: true }}
-                                        open={file.charges ? undefined : false}
-                                        onConfirm={(e) => {
-                                            e?.stopPropagation();
-                                            onRemove(file.uid);
-                                        }}
-                                    >
+                    <Flex gap={6} wrap="wrap">
+                        <StatChip icon={LuFileText} label="Files" count={projectData.files.length} color={token.colorInfo} />
+                        <StatChip icon={LuLayoutGrid} label="Categories" count={totalCategories} color={token.colorWarning} />
+                        <StatChip icon={LuList} label="Items" count={totalItems} color={token.colorSuccess} />
+                    </Flex>
+                </Flex>
+
+                {projectData.files.map((file: ProjectFileType, index: number) => (
+                    <Card key={index} size="small" style={{ width: '100%' }} styles={{ body: { paddingBottom: 0 } }}>
+                        <Splitter style={{ width: '100%', color: "red" }}>
+                            {/* <Splitter style={{ width: '100%', maxHeight: 'calc(100vh - 80px)', height: "max-content", overflow: 'auto' }}> */}
+                            <Splitter.Panel defaultSize={300} min={300} max="50%" style={{ display: "flex", justifyContent: "center", position: "relative" }}>
+                                <div style={{ position: "absolute", top: 8, right: 18, zIndex: 1 }}>
+                                    <Flex gap={8}>
                                         <Button
-                                            danger
-                                            icon={<LuTrash style={{ fontSize: 16 }} />}
+                                            icon={<LuEye style={{ fontSize: 16 }} />}
+                                            onClick={() => setPreviewFile(file)}
                                             shape="circle"
                                         />
-                                    </Popconfirm>
+                                        <Popconfirm
+                                            title="Delete processed image"
+                                            description="This image has already been processed and tokens have been used. Are you sure you want to delete it?"
+                                            okText="Yes, delete"
+                                            cancelText="No, keep it"
+                                            okButtonProps={{ danger: true }}
+                                            open={file.charges ? undefined : false}
+                                            onConfirm={(e) => {
+                                                e?.stopPropagation();
+                                                onRemove(file.uid);
+                                            }}
+                                        >
+                                            <Button
+                                                danger
+                                                icon={<LuTrash style={{ fontSize: 16 }} />}
+                                                shape="circle"
+                                            />
+                                        </Popconfirm>
+                                    </Flex>
+                                </div>
+                                <Flex style={{ width: '100%', overflow: 'auto' }}>
+                                    <ZoomableImage
+                                        src={file.url}
+                                        alt={file.name || `Image ${index + 1}`}
+                                        style={{ width: '100%', minWidth: 300, paddingRight: 10 }}
+                                    />
                                 </Flex>
-                            </div>
-                            <Flex style={{ width: '100%', overflow: 'auto' }}>
-                                <ZoomableImage
-                                    src={file.url}
-                                    alt={file.name || `Image ${index + 1}`}
-                                    style={{ width: '100%', minWidth: 300, paddingRight: 10 }}
+                            </Splitter.Panel>
+                            <Splitter.Panel style={{ paddingLeft: 10 }}>
+                                <EditorContent
+                                    file={file}
+                                    setProjectData={(newData: ProjectFileType) => {
+                                        console.log("new data", newData)
+                                        setProjectData(prev => ({
+                                            ...prev,
+                                            files: prev.files.map(f => f.uid === newData.uid ? newData : f)
+                                        }));
+                                    }}
+                                    selectedLanguages={projectData.languages}
                                 />
-                            </Flex>
-                        </Splitter.Panel>
-                        <Splitter.Panel>
-                            <EditorContent
-                                file={file}
-                                setProjectData={(newData: ProjectFileType) => {
-                                    console.log("new data", newData)
-                                    setProjectData(prev => ({
-                                        ...prev,
-                                        files: prev.files.map(f => f.uid === newData.uid ? newData : f)
-                                    }));
-                                }}
-                                selectedLanguages={selectedLanguages}
-                            />
-                        </Splitter.Panel>
-                    </Splitter>
-                </Card>
-            ))}
+                            </Splitter.Panel>
+                        </Splitter>
+                    </Card>
+                ))}
+
+            </Card>
+
             {previewFile && (
                 <Image
                     alt={previewFile.name}
@@ -248,7 +238,7 @@ function Editor({
                 shape='round'
                 size='large'
                 style={{
-                    zIndex: 1,
+                    zIndex: 14,
                     position: "fixed",
                     width: "max-content",
                     right: '50%',

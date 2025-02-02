@@ -8,18 +8,16 @@ interface OutputViewProps {
     currentView: number;
     setCurrentView: (view: number) => void;
     projectData: Project;
-    selectedLanguages: Set<string>;
 }
 
 function B2CView({
     currentView,
     setCurrentView,
-    projectData,
-    selectedLanguages
+    projectData
 }: OutputViewProps) {
     const { token } = theme.useToken();
     const [activeDeviceType, setActiveDeviceType] = useState<'desktop' | 'mobile'>('desktop');
-    const [activeLanguage, setActiveLanguage] = useState(selectedLanguages[0])
+    const [activeLanguage, setActiveLanguage] = useState(projectData.languages[0]);
 
     const renderItemWithAttributes = (item: any, lang: string) => {
         return (
@@ -136,7 +134,7 @@ function B2CView({
                         </Typography.Title>
                     </Flex>
 
-                    {selectedLanguages.size > 1 && (
+                    {projectData.languages.size > 1 && (
                         <Select
                             style={{
                                 width: activeDeviceType === 'mobile' ? 120 : 160
@@ -144,7 +142,7 @@ function B2CView({
                             value={activeLanguage}
                             onChange={(value) => setActiveLanguage(value)}
                         >
-                            {Array.from(selectedLanguages).map(lang => (
+                            {Array.from(projectData.languages).map(lang => (
                                 <Select.Option key={lang} value={lang}>
                                     {lang.split(' ')[1].replace(/[()]/g, '')}
                                 </Select.Option>
