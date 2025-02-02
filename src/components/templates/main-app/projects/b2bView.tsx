@@ -6,7 +6,7 @@ import { useState } from "react";
 import { LuArrowLeft, LuDownload, LuRefreshCcw, LuShare } from "react-icons/lu";
 import ReactJson from 'react-json-view'; // Import ReactJson component
 import { Project } from "./type";
-import { handleXlsDownload } from "./utils";
+import { handleDownload } from "./utils";
 
 interface OutputViewProps {
     currentView: number;
@@ -82,10 +82,10 @@ function B2BView({ currentView, setCurrentView, originalProjectData }: OutputVie
                                 <Button icon={<LuShare />}>Share</Button>
                             </Flex>
                             <Flex gap={8} wrap="wrap" align="center">
-                                <Button icon={<LuDownload />} onClick={() => handleXlsDownload(projectData)}>JSON</Button>
+                                <Button icon={<LuDownload />} onClick={() => handleDownload(projectData, 'json')}>JSON</Button>
                             </Flex>
                             <Flex gap={8} wrap="wrap" align="center">
-                                <Button icon={<LuDownload />} onClick={() => handleXlsDownload(projectData)}>XLS</Button>
+                                <Button icon={<LuDownload />} onClick={() => handleDownload(projectData, 'xlsx')}>XLS</Button>
                             </Flex>
                         </Flex>
                     </Flex>
