@@ -1,10 +1,12 @@
 import { useAppSelector } from "@hook/useAppSelector";
 import { getDarkModeState } from "@reduxSlices/clientThemeConfig";
-import { Button, Card, Flex, theme } from "antd";
+import { removeObjRef } from "@util/utils";
+import { Button, Card, Flex, Popconfirm, theme } from "antd";
 import { useState } from "react";
-import { LuArrowLeft, LuFileJson, LuFileSpreadsheet, LuShare } from "react-icons/lu";
+import { LuArrowLeft, LuDownload, LuRefreshCcw, LuShare } from "react-icons/lu";
 import ReactJson from 'react-json-view'; // Import ReactJson component
 import { Project } from "./type";
+import { handleXlsDownload } from "./utils";
 
 interface OutputViewProps {
     currentView: number;
@@ -20,24 +22,24 @@ interface JsonEditResult {
     new_value: any;
 }
 
-function B2BView({
-    currentView,
-    setCurrentView,
-    originalProjectData,
-}: OutputViewProps) {
+function B2BView({ currentView, setCurrentView, originalProjectData }: OutputViewProps) {
+
     const { token } = theme.useToken();
-    const [projectData, setProjectData] = useState(originalProjectData)
+    const [projectData, setProjectData] = useState(removeObjRef(originalProjectData))
     const isDarkMode = useAppSelector(getDarkModeState);
+    const [isUpdated, setIsUpdated] = useState(false)
 
     const handleJsonEdit = (file: any, edit: JsonEditResult) => {
         try {
             // Validate edited JSON before updating state
+            console.log(edit)
             JSON.parse(JSON.stringify(edit.updated_src));
             const index = projectData.files.findIndex((f) => f.uid === file.uid);
             if (index !== -1) {
                 const updatedFiles = [...projectData.files];
                 updatedFiles[index].modelResponse.data = edit.updated_src;
                 setProjectData({ ...projectData, files: updatedFiles });
+                setIsUpdated(true)
             }
             // Consider adding Redux dispatch here if needed
         } catch (error) {
@@ -57,24 +59,36 @@ function B2BView({
                     zIndex: 11
                 }}>
                 <Flex vertical gap={4}>
-                    <Card size="small">
-                        <Flex gap={16} justify="space-between" align="center">
+                    <Flex gap={16} justify="space-between" align="center">
+                        <Flex gap={8} wrap="wrap" align="center">
+                            <Button icon={<LuArrowLeft />} onClick={() => setCurrentView(currentView - 1)} shape="circle" />
+                            {isUpdated && (
+                                <Popconfirm
+                                    title="Reset Changes"
+                                    description="Are you sure you want to reset all changes?"
+                                    onConfirm={() => {
+                                        setProjectData(removeObjRef(originalProjectData));
+                                        setIsUpdated(false);
+                                    }}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button icon={<LuRefreshCcw />} shape="circle" />
+                                </Popconfirm>
+                            )}
+                        </Flex>
+                        <Flex gap={8}>
                             <Flex gap={8} wrap="wrap" align="center">
-                                <Button icon={<LuArrowLeft />} onClick={() => setCurrentView(currentView - 1)} shape="circle" />
+                                <Button icon={<LuShare />}>Share</Button>
                             </Flex>
-                            <Flex gap={8}>
-                                <Flex gap={8} wrap="wrap" align="center">
-                                    <Button icon={<LuShare />}>Share</Button>
-                                </Flex>
-                                <Flex gap={8} wrap="wrap" align="center">
-                                    <Button icon={<LuFileJson />}>JSON</Button>
-                                </Flex>
-                                <Flex gap={8} wrap="wrap" align="center">
-                                    <Button icon={<LuFileSpreadsheet />}>XLS</Button>
-                                </Flex>
+                            <Flex gap={8} wrap="wrap" align="center">
+                                <Button icon={<LuDownload />} onClick={() => handleXlsDownload(projectData)}>JSON</Button>
+                            </Flex>
+                            <Flex gap={8} wrap="wrap" align="center">
+                                <Button icon={<LuDownload />} onClick={() => handleXlsDownload(projectData)}>XLS</Button>
                             </Flex>
                         </Flex>
-                    </Card>
+                    </Flex>
 
                     <Card size="small" styles={{ body: { padding: "0" } }} style={{ width: '100%', height: "100%", maxHeight: "calc(100vh - 146px)", overflow: 'auto', background: token.colorBgLayout }}>
                         <Flex justify="space-between" align="flex-start" gap={10} vertical style={{ width: '100%' }}>

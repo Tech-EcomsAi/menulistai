@@ -46,7 +46,8 @@
     "sass": "^1.69.4",
     "use-eye-dropper": "^1.6.1",
     "utf-8-validate": "^6.0.3",
-    "ws": "^8.17.0"
+    "ws": "^8.17.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^20",
