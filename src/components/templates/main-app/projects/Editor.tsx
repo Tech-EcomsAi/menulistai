@@ -20,8 +20,8 @@ function Editor({
     originalProjectData: Project,
     setOriginalProjectData: any,
     onRemove: (id: string) => void,
-    allLanguages: Set<string>,
-    setAllLanguages: (languages: Set<string>) => void,
+    allLanguages: string[],
+    setAllLanguages: (languages: string[]) => void,
     setCurrentView: (view: number) => void
 }) {
     const { token } = theme.useToken();
@@ -33,18 +33,18 @@ function Editor({
         if (!projectData.files) return;
 
         let hasNewLanguages = false;
-        const newAllLanguages = new Set(allLanguages);
-        const newSelectedLanguages = new Set(Array.from(projectData.languages || []));
+        const newAllLanguages = allLanguages;
+        const newSelectedLanguages = projectData.languages || [];
 
         projectData.files.forEach(file => {
             if (file.modelResponse?.data) {
                 const { languages } = file.modelResponse.data;
                 languages?.forEach(lang => {
                     const langString = `${lang.name} (${lang.code})`;
-                    if (!allLanguages.has(langString)) {
+                    if (!allLanguages.includes(langString)) {
                         hasNewLanguages = true;
-                        newAllLanguages.add(langString);
-                        newSelectedLanguages.add(langString);
+                        newAllLanguages.push(langString);
+                        newSelectedLanguages.push(langString);
                     }
                 });
             }
@@ -52,9 +52,9 @@ function Editor({
 
         if (hasNewLanguages) {
             setAllLanguages(newAllLanguages);
-            setProjectData({ ...projectData, languages: newSelectedLanguages });
         }
-    }, [projectData.files, allLanguages, projectData.languages, setAllLanguages, setProjectData]);
+
+    }, [projectData, allLanguages, projectData.languages]);
 
     if (!projectData.files || projectData.files.length === 0) {
         return (
@@ -75,10 +75,6 @@ function Editor({
             totalItems += items?.length || 0;
         }
     });
-
-    const handleLanguageToggle = (newLanguages: Set<string>) => {
-        setProjectData({ ...projectData, languages: newLanguages });
-    };
 
     const handleUploadAndContinue = () => {
         setOriginalProjectData(removeObjRef(projectData));
@@ -146,7 +142,7 @@ function Editor({
                         <LanguageSelector
                             allLanguages={allLanguages}
                             selectedLanguages={projectData.languages}
-                            onLanguageToggle={(updatedLanguages: Set<string>) => setProjectData({ ...projectData, languages: updatedLanguages })}
+                            onLanguageToggle={(updatedLanguages: string[]) => setProjectData({ ...projectData, languages: updatedLanguages })}
                             style={{ marginTop: 0 }}
                         />
                     </Flex>

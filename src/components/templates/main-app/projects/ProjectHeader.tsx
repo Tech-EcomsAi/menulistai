@@ -68,10 +68,10 @@ export function ProjectHeader({
                         },
                         {
                             icon: <></>,
-                            title: <Tooltip title="Design and customize your menu">
+                            title: <Tooltip title="View and customize your menu">
                                 <Flex gap={8} align='center' justify='center'>
                                     <LuSmile fontSize={22} color={currentView >= 3 ? token.colorPrimary : undefined} />
-                                    <Typography.Text style={{ lineHeight: 'unset', color: currentView >= 3 ? token.colorPrimary : undefined }}>Design</Typography.Text>
+                                    <Typography.Text style={{ lineHeight: 'unset', color: currentView >= 3 ? token.colorPrimary : undefined }}>Preview</Typography.Text>
                                 </Flex>
                             </Tooltip>
                         },

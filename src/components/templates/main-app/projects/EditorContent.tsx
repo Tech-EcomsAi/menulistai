@@ -8,7 +8,7 @@ const { Text } = Typography;
 interface EditorContentProps {
     file: ProjectFileType;
     setProjectData: any;
-    selectedLanguages: Set<string>;
+    selectedLanguages: string[];
 }
 
 export function EditorContent({ file, setProjectData, selectedLanguages }: EditorContentProps) {
@@ -154,7 +154,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
         const newItem = {
             id: modelResponse.data.items.length + 1,
             name: Object.fromEntries(
-                Array.from(selectedLanguages).map(langWithCode => {
+                selectedLanguages.map(langWithCode => {
                     const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
                     return [lang, ''];
                 })
@@ -249,7 +249,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
         const newCategory = {
             id: modelResponse.data.categories.length + 1,
             name: Object.fromEntries(
-                Array.from(selectedLanguages).map(langWithCode => {
+                selectedLanguages.map(langWithCode => {
                     const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
                     return [lang, ''];
                 })
@@ -266,17 +266,17 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
 
     const LanguageTag = ({ lang }: { lang: string }) => {
         return (
-            <Tag color={token.colorPrimary} style={{
-                minWidth: 50,
-                textAlign: 'center',
-                lineHeight: "26px",
-                fontSize: 13,
-                borderRadius: 13,
-                background: token.colorPrimaryBg,
-                border: `1px solid ${token.colorPrimaryBorder}`,
-                color: token.colorPrimary,
-
-            }}>{lang}</Tag>
+            <Tag color={token.colorPrimary}
+                style={{
+                    minWidth: 50,
+                    textAlign: 'center',
+                    lineHeight: "26px",
+                    fontSize: 13,
+                    borderRadius: 13,
+                    background: token.colorPrimaryBg,
+                    border: `1px solid ${token.colorPrimaryBorder}`,
+                    color: token.colorPrimary,
+                }}>{lang}</Tag>
         )
     }
 
@@ -319,12 +319,12 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                 </Popconfirm>
                                             </Tooltip>
                                         </Flex>
-                                        {Array.from(selectedLanguages).map(langWithCode => {
+                                        {selectedLanguages.map(langWithCode => {
                                             const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
                                             const name = category.name?.[lang] || '';
                                             return (
-                                                <Flex key={lang} align="center" gap={8}>
-                                                    {selectedLanguages.size > 1 && <LanguageTag lang={lang} />}
+                                                <Flex key={langWithCode} align="center" gap={8}>
+                                                    {selectedLanguages.length > 1 && <LanguageTag lang={lang} />}
                                                     {renderEditableContent(name, `category-${categoryIdx}-${lang}`, lang)}
                                                 </Flex>
                                             );
@@ -363,7 +363,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                         </Tooltip>
                                                     </Flex>
                                                     <Space direction="vertical" style={{ width: '100%' }} size={4}>
-                                                        {Array.from(selectedLanguages).map(langWithCode => {
+                                                        {selectedLanguages.map(langWithCode => {
                                                             const lang = langWithCode.split(' ')[1].replace(/[()]/g, '');
                                                             const name = item.name?.[lang] || '';
                                                             return Boolean(item.attributes?.length) ? (
@@ -373,8 +373,8 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                                     bordered
                                                                     style={{ background: token.colorFillAlter }}
                                                                 >
-                                                                    <Flex key={lang} align="flex-start" gap={8}>
-                                                                        {selectedLanguages.size > 1 && <LanguageTag lang={lang} />}
+                                                                    <Flex key={langWithCode} align="flex-start" gap={8}>
+                                                                        {selectedLanguages.length > 1 && <LanguageTag lang={lang} />}
                                                                         <Flex gap={12} style={{ flex: 1 }} align="flex-start" justify="space-between">
                                                                             <Flex flex={1} style={{ width: "100%" }}>
                                                                                 {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}
@@ -417,7 +417,7 @@ export function EditorContent({ file, setProjectData, selectedLanguages }: Edito
                                                                 </Card>
                                                             ) : (
                                                                 <Flex key={langWithCode} align="flex-start" gap={8}>
-                                                                    {selectedLanguages.size > 1 && <LanguageTag lang={lang} />}
+                                                                    {selectedLanguages.length > 1 && <LanguageTag lang={lang} />}
                                                                     <Flex gap={12} style={{ flex: 1 }} align="flex-start" justify="space-between">
                                                                         <Flex flex={1} style={{ width: "100%" }}>
                                                                             {renderEditableContent(name, `item-${categoryIdx}-${itemIdx}-${lang}`, lang)}

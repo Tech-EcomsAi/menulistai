@@ -134,7 +134,7 @@ function B2CView({
                         </Typography.Title>
                     </Flex>
 
-                    {projectData.languages.size > 1 && (
+                    {projectData.languages.length > 1 && (
                         <Select
                             style={{
                                 width: activeDeviceType === 'mobile' ? 120 : 160

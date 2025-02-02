@@ -34,9 +34,9 @@ function ProjectsPage() {
     //1: File Upload view
     //2: Response editor view
     //3: Catalogue view
-    const [allLanguages, setAllLanguages] = useState<Set<string>>(new Set(['English (en)', 'Spanish (es)', 'French (fr)']));
+    const [allLanguages, setAllLanguages] = useState<string[]>(['English (en)', 'Spanish (es)', 'French (fr)']);
 
-    const handleLanguageToggle = (newLanguages: Set<string>) => {
+    const handleLanguageToggle = (newLanguages: string[]) => {
         if (!projectData) return;
         setProjectData({ ...projectData, languages: newLanguages });
     };
@@ -70,14 +70,14 @@ function ProjectsPage() {
         try {
             const projectData = await getProjectData(projectId);
             // Check if the project already has defined languages
-            if (Boolean(projectData?.languages?.size)) {
+            if (Boolean(projectData?.languages?.length)) {
                 // If languages exist, use them to set the available languages
-                setAllLanguages(new Set(projectData.languages));
+                setAllLanguages(projectData.languages);
             } else {
                 // If no languages are defined, set English as the default project language
-                projectData.languages = new Set(['English (en)']);
+                projectData.languages = ['English (en)'];
                 // Initialize the language selector with default supported languages
-                setAllLanguages(new Set(['English (en)', 'Spanish (es)', 'French (fr)']));
+                setAllLanguages(['English (en)', 'Spanish (es)', 'French (fr)']);
             }
             setProjectData(projectData);
         } catch (error) {
@@ -96,7 +96,7 @@ function ProjectsPage() {
 
         // Calculate processing time
         const processingTime = Date.now() - startTime;
-
+        const modelResponse = DummyModelResponses[i];
         const dummy = {
             uid: file.uid,
             name: file.name,
@@ -107,11 +107,11 @@ function ProjectsPage() {
             deletedAt: null,
             index: 0,
             url: file.url,
-            modelResponse: DummyModelResponses[i],
-            inputToken: 100,
-            ouputToken: 1000,
-            charges: 10,
-            chargePerToken: 10,
+            modelResponse: modelResponse,
+            inputToken: 400,
+            ouputToken: JSON.stringify(modelResponse).length,
+            chargePerToken: 10,//in paise
+            charges: (400 + JSON.stringify(modelResponse).length) * 10,//in paise
             processingTime
         }
         return dummy
@@ -199,8 +199,8 @@ function ProjectsPage() {
         // Generate preview URLs for new files
         await Promise.all(
             newFileList.map(async (file) => {
-                if (!file.url && !file.preview && file.originFileObj && file.type?.startsWith('image/')) {
-                    file.preview = await getBase64(file.originFileObj);
+                if (!file.url && file.originFileObj && file.type?.startsWith('image/')) {
+                    file.url = await getBase64(file.originFileObj);
                 }
             })
         );
@@ -211,7 +211,7 @@ function ProjectsPage() {
             name: file.name,
             size: file.size,
             type: file.type,
-            url: file.preview || file.url
+            url: file.url || ""
         }));
         setProjectData(projectDataCopy);
     }
@@ -272,7 +272,7 @@ function ProjectsPage() {
                             // title="Select Target Languages"
                             description="Choose the languages you want to extract menu items in"
                             allLanguages={allLanguages}
-                            selectedLanguages={projectData?.languages}
+                            selectedLanguages={projectData?.languages || []}
                             onLanguageToggle={handleLanguageToggle}
                         />
                         {projectData?.files?.length > 0 && (<FileList
@@ -307,7 +307,7 @@ function ProjectsPage() {
                             <B2BView
                                 currentView={currentView}
                                 setCurrentView={setCurrentView}
-                                projectData={projectData}
+                                originalProjectData={projectData}
                             />}
                     </Flex>
                 </>}
