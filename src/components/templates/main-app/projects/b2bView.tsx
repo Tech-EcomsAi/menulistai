@@ -5,6 +5,7 @@ import { Button, Card, Flex, Popconfirm, theme } from "antd";
 import { useEffect, useState } from "react";
 import { LuArrowLeft, LuDownload, LuRefreshCcw, LuShare } from "react-icons/lu";
 import ReactJson from 'react-json-view'; // Import ReactJson component
+import { ShareModal } from './ShareModal';
 import { Project } from "./type";
 import { handleDownload, transformForSingleLanguage } from "./utils";
 
@@ -28,6 +29,7 @@ function B2BView({ currentView, setCurrentView, originalProjectData }: OutputVie
     const [projectData, setProjectData] = useState(removeObjRef(originalProjectData))
     const isDarkMode = useAppSelector(getDarkModeState);
     const [isUpdated, setIsUpdated] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     useEffect(() => {
         const projectDataCopy = removeObjRef(originalProjectData)
@@ -100,7 +102,7 @@ function B2BView({ currentView, setCurrentView, originalProjectData }: OutputVie
                         </Flex>
                         <Flex gap={8}>
                             <Flex gap={8} wrap="wrap" align="center">
-                                <Button icon={<LuShare />}>Share</Button>
+                                <Button icon={<LuShare />} onClick={() => setIsShareModalOpen(true)}>Share</Button>
                             </Flex>
                             <Flex gap={8} wrap="wrap" align="center">
                                 <Button icon={<LuDownload />} onClick={() => handleDownload(projectData, 'json')}>JSON</Button>
@@ -129,6 +131,7 @@ function B2BView({ currentView, setCurrentView, originalProjectData }: OutputVie
                     </Card>
                 </Flex>
             </Card>
+            <ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} projectData={projectData} />
         </Flex>
     );
 }

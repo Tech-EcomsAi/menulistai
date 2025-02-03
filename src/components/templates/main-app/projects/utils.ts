@@ -151,7 +151,7 @@ export const transformForSingleLanguage = (data: any, langCode: string) => {
     };
 };
 
-const getOutputJson = (projectData: Project) => {
+export const getOutputJson = (projectData: Project) => {
     const combinedData = {
         categories: [],
         items: [],
