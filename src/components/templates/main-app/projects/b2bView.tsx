@@ -2,11 +2,11 @@ import { useAppSelector } from "@hook/useAppSelector";
 import { getDarkModeState } from "@reduxSlices/clientThemeConfig";
 import { removeObjRef } from "@util/utils";
 import { Button, Card, Flex, Popconfirm, theme } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LuArrowLeft, LuDownload, LuRefreshCcw, LuShare } from "react-icons/lu";
 import ReactJson from 'react-json-view'; // Import ReactJson component
 import { Project } from "./type";
-import { handleDownload } from "./utils";
+import { handleDownload, transformForSingleLanguage } from "./utils";
 
 interface OutputViewProps {
     currentView: number;
@@ -27,7 +27,28 @@ function B2BView({ currentView, setCurrentView, originalProjectData }: OutputVie
     const { token } = theme.useToken();
     const [projectData, setProjectData] = useState(removeObjRef(originalProjectData))
     const isDarkMode = useAppSelector(getDarkModeState);
-    const [isUpdated, setIsUpdated] = useState(false)
+    const [isUpdated, setIsUpdated] = useState(false);
+
+    useEffect(() => {
+        const projectDataCopy = removeObjRef(originalProjectData)
+        if (originalProjectData.languages.length == 1) {
+            projectDataCopy.files.map((file) => {
+                if (file.modelResponse?.data) {
+                    const languageCodes = projectDataCopy.languages.map(lang => {
+                        const match = lang.match(/\((.*?)\)/);
+                        return match ? match[1] : lang;
+                    });
+                    const data = file.modelResponse.data;
+                    const transformedData = transformForSingleLanguage(data, languageCodes[0]);
+                    file.modelResponse.data = transformedData;
+                }
+            });
+            setProjectData(removeObjRef(projectDataCopy))
+        } else {
+            setProjectData(removeObjRef(projectDataCopy))
+        }
+    }, [originalProjectData])
+
 
     const handleJsonEdit = (file: any, edit: JsonEditResult) => {
         try {

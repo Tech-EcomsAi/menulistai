@@ -126,7 +126,7 @@ const createCombinedSheet = (items: any[], categories: any[], languageCodes: str
     return XLSX.utils.json_to_sheet(combinedData);
 };
 
-const transformForSingleLanguage = (data: any, langCode: string) => {
+export const transformForSingleLanguage = (data: any, langCode: string) => {
     return {
         ...data,
         categories: data.categories.map(category => ({
@@ -191,20 +191,8 @@ export const handleDownload = (projectData: Project, type: 'json' | 'xlsx') => {
     const data = getOutputJson(projectData);
 
     if (type === 'json') {
-        // Transform data if single language
-        const languageCodes = data.languages.map(lang => {
-            const match = lang.match(/\((.*?)\)/);
-            return match ? match[1] : lang;
-        });
-
-        let outputData = data;
-        if (languageCodes.length <= 1) {
-            const langCode = languageCodes[0] || Object.keys(data.categories[0]?.name || {})[0];
-            outputData = transformForSingleLanguage(data, langCode);
-        }
-
         // Create and download JSON file
-        const blob = new Blob([JSON.stringify(outputData, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
